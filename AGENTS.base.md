@@ -37,8 +37,9 @@
   `styles/typography.css` before adding a class.
 
 ## Content style
-- When writing or editing user-facing copy (metadata titles, page titles, H1s, and other
-  display text), follow the conventions in the `tanner-brand-voice` skill
+- When writing or editing any user-facing copy — long-form prose (blog posts, bio,
+  marketing copy) as well as display text (metadata titles, page titles, H1s) — follow the
+  voice, tone, and grammatical conventions in the `tanner-brand-voice` skill
   (`.claude/skills/tanner-brand-voice/SKILL.md` — plain markdown, readable by any agent).
 
 ## PR instructions
