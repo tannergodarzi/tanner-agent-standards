@@ -19,6 +19,10 @@ bin/sync.mjs                       the sync / init / check CLI (zero dependencie
 
 ## Add it to a project
 
+This package is **GitHub-only** (`private: true`, never published to npm). Install it from
+GitHub first — that's what puts the `tanner-agent-standards` bin in `node_modules/.bin` so
+plain `npx tanner-agent-standards …` resolves it:
+
 ```bash
 npm i -D github:tannergodarzi/tanner-agent-standards   # pins in package.json + lockfile
 npx tanner-agent-standards init                        # scaffolds AGENTS.md, CLAUDE.md, skills
@@ -27,6 +31,11 @@ npx tanner-agent-standards init                        # scaffolds AGENTS.md, CL
 
 `init` and `sync` are idempotent — safe to re-run anytime.
 
+> **Bare `npx tanner-agent-standards …` fails with a 404** if the package isn't installed in
+> the current repo — `npx` falls back to the npm registry, where this package doesn't exist.
+> Either install it first (above), or run it one-off straight from GitHub with the `github:`
+> prefix: `npx github:tannergodarzi/tanner-agent-standards sync`.
+
 ## Keep a project up to date
 
 ```bash
@@ -34,6 +43,9 @@ npm update tanner-agent-standards      # pull the latest release (bumps the lock
 npx tanner-agent-standards sync        # re-inject the managed block + refresh skills
 git add -A && git commit -m "chore: sync tanner-agent-standards"
 ```
+
+(The bare `npx` above works because the package is already installed in the repo. In a repo
+that hasn't installed it yet, use `npx github:tannergodarzi/tanner-agent-standards sync`.)
 
 `npm outdated` across your repos shows which are behind. To fail CI or a pre-commit hook
 on drift:
