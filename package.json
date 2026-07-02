@@ -1,0 +1,24 @@
+{
+  "name": "tanner-agent-standards",
+  "version": "1.0.0",
+  "description": "Tanner's shared, agent-agnostic AI conventions (AGENTS.md + skills), synced across repos.",
+  "type": "module",
+  "private": true,
+  "bin": {
+    "tanner-agent-standards": "bin/sync.mjs"
+  },
+  "files": [
+    "AGENTS.base.md",
+    "bin",
+    "skills",
+    "templates"
+  ],
+  "scripts": {
+    "self-check": "node bin/sync.mjs --version"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tannergodarzi/tanner-agent-standards.git"
+  },
+  "license": "UNLICENSED"
+}
