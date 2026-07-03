@@ -120,10 +120,35 @@ In order:
 
 ## Report format
 
-Group findings by severity, most severe first. For each: the file and line, one sentence on
-what's wrong, and the fix. Then the pages/breakpoints you actually opened, and the production
-comparison you ran. End with a one-line verdict: **ship**, **ship after Warnings**, or
-**blocked**.
+Write for someone deciding whether to merge, in this order:
 
-If a dimension had nothing to flag, say so in one line — silence isn't the same as "checked
-and clean," and the reader should know you looked.
+1. **Summary.** Two or three sentences: what changed, what you checked, and the headline
+   takeaway. No preamble.
+2. **Merge verdict.** Is this safe to ship to production for real users? Answer plainly —
+   **ship**, **ship after Warnings**, or **blocked** — and give the one-line reason. This is
+   the line the reader is scanning for; make it unmissable.
+3. **What's good.** Call out what the change gets right *against the dimensions above* — the
+   parts that pass the eval. a11y handled, breakpoints hold, voice on point, no shift,
+   conventions matched. Silence isn't praise: name what you checked and found clean so the
+   reader knows it was looked at, not skipped. This section is not optional.
+4. **Findings table.** Every issue in one table, most severe first:
+
+   | Severity | Type | Location | Issue | Fix |
+   |----------|------|----------|-------|-----|
+   | Blocker | Accessibility | `Hero.tsx:42` | Nav toggle has no accessible label | Add `aria-label="Menu"` |
+   | Warning | Design | `/blog` @ 768px | Card grid overflows the container | Cap columns to 2 below 800px |
+   | Nit | Code | `postCard.module.css` | Bare `className="card lg"` breaks the convention | Use the `classnames` helper |
+
+   - **Severity** — Blocker / Warning / Nit (definitions above).
+   - **Type** — the dimension it falls under: **Performance**, **Design**, **Content**
+     (typos + brand voice), **Accessibility**, or **Code**.
+   - **Location** — file and line, or the route + breakpoint for a visual finding.
+   - **Issue** — one sentence on what's wrong.
+   - **Fix** — the concrete change.
+
+5. **Evidence.** The pages and breakpoints you actually opened, and the production comparison
+   you ran. If you couldn't get a headless browser up, say so here — the visual and
+   accessibility dimensions are then unverified, not passed.
+
+If a dimension had nothing to flag, say so in one line (in *What's good* or below the table) —
+silence isn't the same as "checked and clean," and the reader should know you looked.
