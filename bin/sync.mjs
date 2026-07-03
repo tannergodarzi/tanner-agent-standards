@@ -8,6 +8,7 @@
 //
 // Usage, run from a consumer repo root:
 //   npx tanner-agent-standards sync     inject/refresh the managed block + skills (idempotent)
+//   npx tanner-agent-standards update   npm update this package, then sync (one step)
 //   npx tanner-agent-standards init     same as sync, with brand-new-repo onboarding output
 //   npx tanner-agent-standards check    exit non-zero if the repo is out of date (CI / pre-commit)
 
@@ -19,6 +20,7 @@ import {
   mkdirSync,
   readdirSync,
 } from "node:fs";
+import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { dirname, join, resolve } from "node:path";
 
@@ -99,12 +101,31 @@ function check() {
   console.log(`✓ tanner-agent-standards v${VERSION} in sync`);
 }
 
+// npm update this package in the consumer, then run sync from the freshly-installed
+// version. Re-execs so `sync` runs the just-pulled code, not this (now-stale) process.
+function update() {
+  const pkg = "tanner-agent-standards";
+  console.log(`Updating ${pkg} in ${TARGET}…`);
+  const up = spawnSync("npm", ["update", pkg], { stdio: "inherit", cwd: TARGET });
+  if (up.status !== 0) {
+    console.error("✗ npm update failed — skipping sync. Fix the install and retry.");
+    process.exit(up.status || 1);
+  }
+  const sync = spawnSync("npx", ["--no-install", pkg, "sync"], {
+    stdio: "inherit",
+    cwd: TARGET,
+  });
+  process.exit(sync.status ?? 0);
+}
+
 const cmd = process.argv[2] || "sync";
 
 if (cmd === "--version" || cmd === "-v") {
   console.log(VERSION);
 } else if (cmd === "check") {
   check();
+} else if (cmd === "update") {
+  update();
 } else if (cmd === "sync" || cmd === "init") {
   const a = ensureAgents();
   const c = ensureClaude();
@@ -117,6 +138,6 @@ if (cmd === "--version" || cmd === "-v") {
     console.log("\nNext: replace the app-description comment near the top of AGENTS.md, then commit.");
   }
 } else {
-  console.log("Usage: tanner-agent-standards <sync|init|check>");
+  console.log("Usage: tanner-agent-standards <sync|update|init|check>");
   process.exit(1);
 }
