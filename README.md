@@ -14,6 +14,7 @@ project-specific rules stay yours — sync never touches anything outside the ma
 AGENTS.base.md                     the shared rules (Setup · Deps · TS · React · CSS · Content · PR)
 templates/AGENTS.md                starter for a brand-new repo (markers + placeholders)
 skills/tanner-brand-voice/         canonical brand voice — plain markdown, any agent can read it
+skills/tanner-code-review/         how Tanner reviews front-end changes (perf · design · content · a11y · code)
 bin/sync.mjs                       the sync / init / check CLI (zero dependencies)
 ```
 
@@ -91,6 +92,25 @@ block so `check` can detect drift.
 - **Once, globally (Claude-only convenience):** symlink it as a personal skill so it applies in
   every project without a per-repo copy —
   `ln -s "$PWD/skills/tanner-brand-voice" ~/.claude/skills/tanner-brand-voice`.
+
+## The code-review skill
+
+`skills/tanner-code-review/SKILL.md` is how Tanner reviews front-end work before it ships —
+a diff, a PR, or your own branch. It's a review procedure, not a checklist: get the diff, map
+each touched component to the routes that render it, grep the touched files for every `@media`
+breakpoint, then **spin up a headless browser** and load the pages against the running build.
+It walks five dimensions — **performance** (layout shift, load speed, memory leaks, image and
+asset weight, loading states), **design** (visual regressions vs the production baseline, brand
+tokens, every reported breakpoint), **content** (typos, plus the [brand-voice
+skill](#the-brand-voice-skill) for new copy), **accessibility** (latest WCAG, a
+`prefers-reduced-motion` killswitch on all motion, mobile tap targets and font size), and
+**code** (matching existing naming and conventions). Findings come back labelled
+**Blocker / Warning / Nit** with a one-line ship / ship-after-warnings / blocked verdict.
+
+Distributed the same way as brand-voice: `sync` copies it into `.claude/skills/`, so any agent
+can read it and Claude Code auto-loads it as a skill — and can drive the headless browser for
+the visual and accessibility passes. If a browser can't be brought up, those dimensions are
+reported as unverified rather than passed.
 
 ## Claude-only shortcut (optional)
 
