@@ -45,6 +45,20 @@ npx tanner-agent-standards sync        # re-inject the managed block + refresh s
 git add -A && git commit -m "chore: sync tanner-agent-standards"
 ```
 
+Or do the update-and-sync in one step — `update` runs `npm update` then `sync` for you:
+
+```bash
+npx tanner-agent-standards update      # npm update + sync, in one command
+```
+
+Prefer a repo-local shortcut? Add a script to that repo's `package.json`:
+
+```json
+{ "scripts": { "sync:standards": "npm update tanner-agent-standards && npx tanner-agent-standards sync" } }
+```
+
+then run `npm run sync:standards`.
+
 (The bare `npx` above works because the package is already installed in the repo. In a repo
 that hasn't installed it yet, use `npx github:tannergodarzi/tanner-agent-standards sync`.)
 
