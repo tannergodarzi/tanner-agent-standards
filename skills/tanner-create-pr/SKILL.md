@@ -54,18 +54,36 @@ Write for the reviewer deciding whether to merge. Lead with substance — no pre
    the approach, the files or systems touched, anything a reviewer needs to follow the diff.
    Length follows the change: a small PR gets a few sentences, a large one gets more. Don't
    pad it.
-3. **Screenshots.** For any change that produces a visual update, include a screenshot of the
-   touched surface area **captured from a headless Chrome instance** (Claude Code can drive
-   this with its browser tools — see the [[tanner-code-review]] skill for spinning one up).
-   Not every change is visual; when it is, a screenshot of what changed is required — a visual
-   change with no visual evidence is incomplete.
-4. **`## Test Plan`.** A section under a heading literally named **Test Plan**, documenting the
+3. **`## Test Plan`.** A section under a heading literally named **Test Plan**, documenting the
    steps taken to validate the change: what was tested and how, the repo's checks that were run
    (lint / build / test, whichever the repo has), and any bug testing performed. This is where
    the reviewer sees the work was actually verified, not assumed.
-5. **Testable paths.** Where applicable, list the route(s) a reviewer can open to exercise the
+4. **Testable paths.** Where applicable, list the route(s) a reviewer can open to exercise the
    change — e.g. a change to the home page lists `/home`. Give the concrete paths so the
    reviewer can go straight to the affected surface.
+
+## Screenshots
+
+Still **capture a screenshot for every change that produces a visual update** — a visual change
+with no visual evidence is incomplete. Drive a headless Chrome instance to capture the touched
+surface area (Claude Code can do this with its browser tools — see the [[tanner-code-review]]
+skill for spinning one up).
+
+**Do not embed the screenshot in the PR body, and never commit it.** A GitHub PR body can only
+render an image that already lives at a URL GitHub can fetch; `gh pr create` has no upload step,
+so a local file path never renders. Instead, save each screenshot **outside the repository** so
+git never tracks it, and leave it for Tanner to drag into the PR description if he wants it
+inline (GitHub uploads and hosts it at that point).
+
+- **Location:** a user-accessible folder that is not the repo — `~/Desktop` (fall back to
+  `~/Downloads` if Desktop isn't present).
+- **Filename:** `branchname_author_screenshotname_date` — underscores between the four parts.
+  - `branchname` — the current git branch (`git rev-parse --abbrev-ref HEAD`)
+  - `author` — the git author name (`git config user.name`)
+  - `screenshotname` — a short name for what the shot shows (e.g. `blog-index-grid`)
+  - `date` — `YYYY-MM-DD`
+  - Replace spaces and slashes with hyphens *within* each part; keep the underscores between
+    parts. Example: `tannergodarzi-palembang_tanner_blog-index-grid_2026-07-04.png`.
 
 All prose follows the [[tanner-brand-voice]] skill — Tanner's voice, no periods in headings,
 no AI filler. The PR should read like Tanner wrote it, not like a template.
