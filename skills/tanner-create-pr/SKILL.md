@@ -21,7 +21,7 @@ Do these first — a PR that fails them isn't ready to exist:
    `npm run build`, and its test command. Each one green before you push; if one fails, fix it
    or don't open the PR. Skip a check only when the repo genuinely doesn't have it (some repos
    have no build or lint step) — don't invent scripts that aren't there.
-2. **The diff is the change and nothing else.** No stray debug logs, no commented-out code,
+2. **The diff is the change and nothing else.** No stray debug logs,
    no unrelated formatting churn, no committed lockfile from the wrong package manager
    (npm only — never `pnpm-lock.yaml` or `yarn.lock`).
 3. **Know the base.** Open against the intended target branch (usually `main`), and make
