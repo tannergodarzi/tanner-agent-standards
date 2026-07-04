@@ -17,9 +17,10 @@ that reads in Tanner's voice, and that never lands with lint or build broken.
 
 Do these first — a PR that fails them isn't ready to exist:
 
-1. **Lint and build pass.** Run `npm run lint` and `npm run build`. Both green before you
-   push. If either fails, fix it or don't open the PR. (This mirrors the PR instructions in
-   `AGENTS.md`.)
+1. **The repo's checks pass.** Run whatever the repo defines — typically `npm run lint`,
+   `npm run build`, and its test command. Each one green before you push; if one fails, fix it
+   or don't open the PR. Skip a check only when the repo genuinely doesn't have it (some repos
+   have no build or lint step) — don't invent scripts that aren't there.
 2. **The diff is the change and nothing else.** No stray debug logs, no commented-out code,
    no unrelated formatting churn, no committed lockfile from the wrong package manager
    (npm only — never `pnpm-lock.yaml` or `yarn.lock`).
@@ -58,9 +59,9 @@ Write for the reviewer deciding whether to merge. Lead with substance — no pre
    Not every change is visual; when it is, a screenshot of what changed is required — a visual
    change with no visual evidence is incomplete.
 4. **`## Test Plan`.** A section under a heading literally named **Test Plan**, documenting the
-   steps taken to validate the change: what was tested and how, the lint pass, the build pass,
-   and any bug testing performed. This is where the reviewer sees the work was actually
-   verified, not assumed.
+   steps taken to validate the change: what was tested and how, the repo's checks that were run
+   (lint / build / test, whichever the repo has), and any bug testing performed. This is where
+   the reviewer sees the work was actually verified, not assumed.
 5. **Testable paths.** Where applicable, list the route(s) a reviewer can open to exercise the
    change — e.g. a change to the home page lists `/home`. Give the concrete paths so the
    reviewer can go straight to the affected surface.

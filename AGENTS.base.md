@@ -45,7 +45,8 @@
 ## PR instructions
 - Title format: `[Surface Area] Concise Title Case Title Of What This PR Accomplishes` — a
   surface-area prefix (the part of the app touched), Title Case, no trailing period.
-- Always run `npm run lint` and `npm run build` before committing.
+- Run the repo's checks before committing — `npm run lint`, `npm run build`, and its test
+  command, whichever the repo defines. Skip only a check the repo genuinely doesn't have.
 - When opening a PR, follow the `tanner-create-pr` skill
   (`.claude/skills/tanner-create-pr/SKILL.md` — plain markdown, readable by any agent) for the
   full title format and body structure (business-goal summary, detail paragraph, headless-Chrome

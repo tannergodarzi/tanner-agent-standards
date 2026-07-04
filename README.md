@@ -137,9 +137,9 @@ agent can read the file directly). It sets the **title format** —
 structure**: a 2–3 sentence summary framed around the business goal, a fuller detail
 paragraph, **screenshots captured from a headless Chrome instance** for any visual change, a
 `## Test Plan` section documenting validation / lint / bug testing, and the testable route(s)
-a reviewer can open (e.g. `/home`). Before the PR opens it also gates on `npm run lint` and
-`npm run build` passing and a clean diff. All prose routes through the [brand-voice
-skill](#the-brand-voice-skill).
+a reviewer can open (e.g. `/home`). Before the PR opens it also gates on the repo's own checks
+(lint / build / test, whichever exist) passing and a clean diff. All prose routes through the
+[brand-voice skill](#the-brand-voice-skill).
 
 Distributed the same way as the others: `sync` copies it into `.claude/skills/`, so any agent
 can read it and Claude Code auto-loads it as a skill.
