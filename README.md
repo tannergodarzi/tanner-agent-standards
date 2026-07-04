@@ -15,6 +15,7 @@ AGENTS.base.md                     the shared rules (Setup · Deps · TS · Reac
 templates/AGENTS.md                starter for a brand-new repo (markers + placeholders)
 skills/tanner-brand-voice/         canonical brand voice — plain markdown, any agent can read it
 skills/tanner-code-review/         how Tanner reviews front-end changes (perf · design · content · a11y · code)
+skills/tanner-create-pr/           how Tanner opens a PR (title format · body structure · Test Plan)
 bin/sync.mjs                       the sync / init / check CLI (zero dependencies)
 ```
 
@@ -125,6 +126,23 @@ Distributed the same way as brand-voice: `sync` copies it into `.claude/skills/`
 can read it and Claude Code auto-loads it as a skill — and can drive the headless browser for
 the visual and accessibility passes. If a browser can't be brought up, those dimensions are
 reported as unverified rather than passed.
+
+## The create-PR skill
+
+`skills/tanner-create-pr/SKILL.md` is how Tanner wants a pull request written — it fires
+whenever a PR is being created, including when an agent harness like Conductor invokes its
+create-PR step (Claude Code auto-loads it when the task matches its description; any other
+agent can read the file directly). It sets the **title format** —
+`[project_name][Surface Area] Concise Title Case Title Of What This PR Accomplishes` — and the **body
+structure**: a 2–3 sentence summary framed around the business goal, a fuller detail
+paragraph, **screenshots captured from a headless Chrome instance** for any visual change, a
+`## Test Plan` section documenting validation / lint / bug testing, and the testable route(s)
+a reviewer can open (e.g. `/home`). Before the PR opens it also gates on the repo's own checks
+(lint / build / test, whichever exist) passing and a clean diff. All prose routes through the
+[brand-voice skill](#the-brand-voice-skill).
+
+Distributed the same way as the others: `sync` copies it into `.claude/skills/`, so any agent
+can read it and Claude Code auto-loads it as a skill.
 
 ## Claude-only shortcut (optional)
 
