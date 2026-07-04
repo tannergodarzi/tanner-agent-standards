@@ -133,7 +133,7 @@ reported as unverified rather than passed.
 whenever a PR is being created, including when an agent harness like Conductor invokes its
 create-PR step (Claude Code auto-loads it when the task matches its description; any other
 agent can read the file directly). It sets the **title format** —
-`[Surface Area] Concise Title Case Title Of What This PR Accomplishes` — and the **body
+`[project_name][Surface Area] Concise Title Case Title Of What This PR Accomplishes` — and the **body
 structure**: a 2–3 sentence summary framed around the business goal, a fuller detail
 paragraph, **screenshots captured from a headless Chrome instance** for any visual change, a
 `## Test Plan` section documenting validation / lint / bug testing, and the testable route(s)

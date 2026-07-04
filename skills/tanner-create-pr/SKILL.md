@@ -29,11 +29,12 @@ Do these first — a PR that fails them isn't ready to exist:
 
 ## Title
 
-Format: `[Surface Area] Concise Title Case Title Of What This PR Accomplishes`
+Format: `[project_name][Surface Area] Concise Title Case Title Of What This PR Accomplishes`
 
-- **The `[Surface Area]` prefix is required.** Name the part of the app the PR touches —
-  the surface area of the change (e.g. `[Blog]`, `[Auth]`, `[Design System]`), not a generic
-  project name.
+- **Both prefixes are required.** Lead with `[project_name]` — the repo/app's short name —
+  then `[Surface Area]`, the part of the app the PR touches (e.g. `[Blog]`, `[Auth]`,
+  `[Design System]`). Two adjacent brackets, no space between them:
+  `[tanner-site][Blog] Add Masonry Grid To The Index`.
 - **Title Case** — capitalize the first letter of every word.
 - **Concise, and about what the PR accomplishes** — a plain statement of the outcome, not
   "Added…" or "This PR adds…". Short enough to read at a glance; the body carries the detail.

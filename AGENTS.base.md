@@ -43,7 +43,7 @@
   (`.claude/skills/tanner-brand-voice/SKILL.md` — plain markdown, readable by any agent).
 
 ## PR instructions
-- Title format: `[Surface Area] Concise Title Case Title Of What This PR Accomplishes` — a
+- Title format: `[project_name][Surface Area] Concise Title Case Title Of What This PR Accomplishes` — a
   surface-area prefix (the part of the app touched), Title Case, no trailing period.
 - Run the repo's checks before committing — `npm run lint`, `npm run build`, and its test
   command, whichever the repo defines. Skip only a check the repo genuinely doesn't have.
