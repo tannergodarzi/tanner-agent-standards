@@ -43,5 +43,10 @@
   (`.claude/skills/tanner-brand-voice/SKILL.md` — plain markdown, readable by any agent).
 
 ## PR instructions
-- Title format: [<project_name>] <Title>
+- Title format: `[Surface Area] Concise Title Case Title Of What This PR Accomplishes` — a
+  surface-area prefix (the part of the app touched), Title Case, no trailing period.
 - Always run `npm run lint` and `npm run build` before committing.
+- When opening a PR, follow the `tanner-create-pr` skill
+  (`.claude/skills/tanner-create-pr/SKILL.md` — plain markdown, readable by any agent) for the
+  full title format and body structure (business-goal summary, detail paragraph, headless-Chrome
+  screenshots for visual changes, a `## Test Plan` section, and testable paths).
