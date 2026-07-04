@@ -1,0 +1,154 @@
+---
+name: tanner-code-review
+description: How Tanner reviews front-end changes — performance, design and visual regressions, content, accessibility, and code conventions. Use when reviewing a diff, PR, or branch of UI work before it ships, or when asked to review front-end/CSS/component changes.
+---
+
+# Tanner Code Review
+
+How to review front-end work the way Tanner does. Run this before any UI change ships —
+a PR, a branch, or your own working diff. The goal is a page that's fast, looks right at
+every size, reads clean, works for everyone, and looks like it was written by the same
+person who wrote the rest of the codebase.
+
+> Plain markdown — any agent can read this file directly; Claude Code additionally
+> auto-loads it as a skill and can drive the browser (via its browser tools) for the
+> visual and accessibility checks below.
+
+**Validate in a real browser — don't eyeball the code alone.** These changes have to be
+seen rendered, so spin up a **headless browser instance** against the running build and
+actually load the pages. Reading the diff catches the code findings; only a real browser at
+real viewport sizes catches layout shift, visual regressions, broken breakpoints, and motion
+that ignores reduced-motion. If you can't get a headless browser up, say so in the report —
+the visual and accessibility dimensions are then unverified, not passed.
+
+## How to run the review
+
+Don't spot-check. Work the diff top to bottom, then load the running page in the browser.
+In order:
+
+1. **Get the diff.** `git diff origin/main...` (or the PR range). List every file touched.
+2. **Map the surface.** For each changed component or layout, name the route(s) that render
+   it. A change to a `Blog*` component is a change to `/blog` and every post. Write the list
+   down — those are the pages you'll actually open.
+3. **Find the breakpoints.** Grep the touched files *and their CSS modules* for every
+   `@media` query (`grep -rn "@media"`). Collect the distinct widths. Those are the exact
+   viewport sizes you check — not a generic "mobile / tablet / desktop."
+4. **Spin up a headless browser.** Start (or point at) the running build and drive it with a
+   headless browser instance. Load each mapped page, and resize the viewport to every width
+   from step 3 plus the extremes just past the smallest and largest query. This is the
+   instance you run every visual, breakpoint, and accessibility check against.
+5. **Compare against production.** When a change is obviously visual, open the same route on
+   production in the browser alongside the local build and diff them by eye. The production
+   page is the baseline for "did this regress." (e.g. work on Blog components → check local
+   `/blog` against production `/blog`.) If a difference is intentional, say so; if you can't
+   tell, flag it.
+6. **Walk the five dimensions below** for the mapped pages.
+7. **Report** in the format at the bottom.
+
+## Severity — label every finding
+
+- **Blocker** — ships broken: visual regression, layout shift, broken layout at a real
+  breakpoint, a11y failure that locks someone out, a typo in shipped copy, a memory leak.
+- **Warning** — should fix, won't strictly break the page: an a11y gap short of a hard
+  failure, a marginal tap target, an unoptimized-but-working asset. Accessibility gaps are
+  **always at least a Warning** — never silent.
+- **Nit** — taste and consistency: naming, a cleaner pattern, a redundant style.
+
+## Performance
+
+- **No layout shift.** Nothing may jump as the page settles. Images, embeds, and ads carry
+  explicit `width`/`height` or an aspect-ratio box. Fonts don't reflow the page on swap
+  (`font-display`, matched fallback metrics). Async-loaded content reserves its space up
+  front. Treat any visible shift as a Blocker.
+- **Fast to load.** No render-blocking work that didn't need to be. Watch bundle size on the
+  touched routes, unnecessary client components, and data fetched on the client that could be
+  fetched on the server. Big new dependencies get called out.
+- **No memory leaks.** Every `addEventListener`, `setInterval`/`setTimeout`, subscription,
+  observer (`IntersectionObserver`, `ResizeObserver`), and animation loop
+  (`requestAnimationFrame`) added in an effect must be torn down in that effect's cleanup.
+  A leak is a Blocker.
+- **Images optimized, assets lean.** Images are sized to their display box, served in a
+  modern format (WebP/AVIF), and lazy-loaded below the fold. No shipping a 4 MB hero PNG.
+  Flag any large asset added to the repo and ask if it can be smaller.
+- **Loading states are handled.** No long stretch of blank or unstyled screen. Async UI shows
+  a skeleton or placeholder that reserves the final layout (which also kills the shift in the
+  first bullet). No flash of unstyled or un-hydrated content.
+
+## Design
+
+- **No visual regressions.** Against the production baseline from step 4, nothing that wasn't
+  meant to change has changed — spacing, color, type scale, alignment, borders, shadows.
+- **Brand guidelines.** If the repo has design tokens, a theme, or brand rules, the change
+  uses them — no hardcoded one-off colors or spacing that dodge the system.
+- **Every reported breakpoint.** Open each page at *every* width you collected in step 3, plus
+  the extremes just past the smallest and largest query. The layout holds at all of them: no
+  overflow, no overlap, no orphaned element, no broken grid. This is the check people skip and
+  it's where regressions hide.
+
+## Content
+
+- **No typos.** Read the copy that changed. Spelling, grammar, punctuation.
+- **Follow the voice.** Any new or edited user-facing text — prose, headings, titles, labels,
+  metadata — follows the [[tanner-brand-voice]] skill: the voice, tone, and hard grammatical
+  rules (no periods in titles/headings, "Front-End" capitalized, no AI filler vocabulary).
+
+## Accessibility
+
+- **Meet the current spec.** Check against the latest WCAG. Semantic elements over `div`
+  soup, labels on every control, alt text on meaningful images, visible and logical focus
+  order, keyboard operability, and adequate color contrast. A hard failure is a Blocker; a
+  gap short of that is a **Warning — never leave it unsaid.**
+- **Motion has a killswitch.** Every animation, transition, or auto-playing motion has a
+  matching `@media (prefers-reduced-motion: reduce)` rule that turns it off (or down). Motion
+  without a reduced-motion escape hatch is a Blocker.
+- **Mobile UX is real.** Tap targets are at least ~44×44px with enough spacing that you can't
+  fat-finger the wrong one. Body text stays legible (≈16px+) so mobile Safari doesn't
+  zoom on focus. Nothing important hides behind hover, which phones don't have.
+
+## Code
+
+- **Follow the conventions already here.** Read the surrounding code first, then match it —
+  naming, file layout, and paradigm. The change should be indistinguishable in style from
+  what a longtime maintainer would have written.
+- **One naming system, consistently.** Don't mix conventions: camelCase vs BEM, CSS Modules
+  vs bare class strings, etc. If the codebase is camelCase CSS Modules, a new `block__element`
+  or a bare `className="foo bar"` is a finding. (In Tanner's repos the rule is camelCase CSS
+  Module classes, ≤3 words, combined with the `classnames` helper — see the CSS section of
+  `AGENTS.md`.)
+- **Descriptive to a human.** Names say what the thing is and does. No `data2`, no `tmp`, no
+  abbreviations only the author understands.
+
+## Report format
+
+Write for someone deciding whether to merge, in this order:
+
+1. **Summary.** Two or three sentences: what changed, what you checked, and the headline
+   takeaway. No preamble.
+2. **Merge verdict.** Is this safe to ship to production for real users? Answer plainly —
+   **ship**, **ship after Warnings**, or **blocked** — and give the one-line reason. This is
+   the line the reader is scanning for; make it unmissable.
+3. **What's good.** Call out what the change gets right *against the dimensions above* — the
+   parts that pass the eval. a11y handled, breakpoints hold, voice on point, no shift,
+   conventions matched. Silence isn't praise: name what you checked and found clean so the
+   reader knows it was looked at, not skipped. This section is not optional.
+4. **Findings table.** Every issue in one table, most severe first:
+
+   | Severity | Type | Location | Issue | Fix |
+   |----------|------|----------|-------|-----|
+   | Blocker | Accessibility | `Hero.tsx:42` | Nav toggle has no accessible label | Add `aria-label="Menu"` |
+   | Warning | Design | `/blog` @ 768px | Card grid overflows the container | Cap columns to 2 below 800px |
+   | Nit | Code | `postCard.module.css` | Bare `className="card lg"` breaks the convention | Use the `classnames` helper |
+
+   - **Severity** — Blocker / Warning / Nit (definitions above).
+   - **Type** — the dimension it falls under: **Performance**, **Design**, **Content**
+     (typos + brand voice), **Accessibility**, or **Code**.
+   - **Location** — file and line, or the route + breakpoint for a visual finding.
+   - **Issue** — one sentence on what's wrong.
+   - **Fix** — the concrete change.
+
+5. **Evidence.** The pages and breakpoints you actually opened, and the production comparison
+   you ran. If you couldn't get a headless browser up, say so here — the visual and
+   accessibility dimensions are then unverified, not passed.
+
+If a dimension had nothing to flag, say so in one line (in *What's good* or below the table) —
+silence isn't the same as "checked and clean," and the reader should know you looked.
