@@ -19,6 +19,10 @@ skills/tanner-create-pr/           how Tanner opens a PR (title format · body s
 bin/sync.mjs                       the sync / init / check CLI (zero dependencies)
 ```
 
+`sync` fans the skills out to each agent's native home in the consumer repo — `.claude/skills/`
+(Claude), `.cursor/rules/*.mdc` (Cursor), and a `## Skills` index inside `AGENTS.md` for
+Codex / Copilot / Gemini and any other agent that only reads `AGENTS.md`.
+
 ## Add it to a project
 
 This package is **GitHub-only** (`private: true`, never published to npm). Install it from
@@ -101,9 +105,11 @@ block so `check` can detect drift.
 
 `skills/tanner-brand-voice/SKILL.md` is your voice, not any one project's. Two ways to use it:
 
-- **Per-repo (default, agent-agnostic):** `sync` copies it into `.claude/skills/`. It's plain
-  markdown referenced by path in `AGENTS.md`, so Cursor/Codex/etc. can read it too; Claude Code
-  also auto-loads it as a skill.
+- **Per-repo (default, agent-agnostic):** `sync` fans it out to every agent's native home —
+  `.claude/skills/<name>/SKILL.md` (Claude Code auto-loads it), `.cursor/rules/<name>.mdc`
+  (Cursor auto-attaches it as an agent-requested rule), and a `## Skills` index in `AGENTS.md`
+  so Codex / Copilot / Gemini — which have no skills folder — find it by reading the one file
+  they all read.
 - **Once, globally (Claude-only convenience):** symlink it as a personal skill so it applies in
   every project without a per-repo copy —
   `ln -s "$PWD/skills/tanner-brand-voice" ~/.claude/skills/tanner-brand-voice`.
@@ -122,10 +128,10 @@ skill](#the-brand-voice-skill) for new copy), **accessibility** (latest WCAG, a
 **code** (matching existing naming and conventions). Findings come back labelled
 **Blocker / Warning / Nit** with a one-line ship / ship-after-warnings / blocked verdict.
 
-Distributed the same way as brand-voice: `sync` copies it into `.claude/skills/`, so any agent
-can read it and Claude Code auto-loads it as a skill — and can drive the headless browser for
-the visual and accessibility passes. If a browser can't be brought up, those dimensions are
-reported as unverified rather than passed.
+Distributed the same way as brand-voice — fanned out to `.claude/skills/`, `.cursor/rules/`,
+and the `## Skills` index in `AGENTS.md` — so any agent can read it and Claude Code auto-loads
+it as a skill and can drive the headless browser for the visual and accessibility passes. If a
+browser can't be brought up, those dimensions are reported as unverified rather than passed.
 
 ## The create-PR skill
 
@@ -141,8 +147,9 @@ a reviewer can open (e.g. `/home`). Before the PR opens it also gates on the rep
 (lint / build / test, whichever exist) passing and a clean diff. All prose routes through the
 [brand-voice skill](#the-brand-voice-skill).
 
-Distributed the same way as the others: `sync` copies it into `.claude/skills/`, so any agent
-can read it and Claude Code auto-loads it as a skill.
+Distributed the same way as the others — fanned out to `.claude/skills/`, `.cursor/rules/`, and
+the `## Skills` index in `AGENTS.md` — so any agent can read it and Claude Code auto-loads it as
+a skill.
 
 ## Claude-only shortcut (optional)
 

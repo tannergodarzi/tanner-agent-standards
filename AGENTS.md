@@ -3,7 +3,7 @@
 <!-- One-line description of what this app is — replace this comment. -->
 
 <!-- BEGIN:tanner-agent-standards -->
-<!-- v1.4.0 · managed block — do not edit here; run `npx tanner-agent-standards sync` -->
+<!-- v1.5.0 · managed block — do not edit here; run `npx tanner-agent-standards sync` -->
 
 ## Setup commands
 - Install deps: `npm install`
@@ -58,6 +58,19 @@
   (`.claude/skills/tanner-create-pr/SKILL.md` — plain markdown, readable by any agent) for the
   full title format and body structure (business-goal summary, detail paragraph, headless-Chrome
   screenshots for visual changes, a `## Test Plan` section, and testable paths).
+
+## Skills
+
+Deep-dive references synced into this repo. Claude Code auto-loads them from
+`.claude/skills/`; Cursor auto-attaches them from `.cursor/rules/`; Codex and other
+AGENTS.md-based agents should open the referenced file when a task matches its description.
+
+- **tanner-brand-voice** — How to write in Tanner's voice, plus his grammatical conventions for site copy. Use when writing or editing anything user-facing — blog posts, about/bio copy, project descriptions, marketing copy, metadata titles, page titles, H1 headings, and other display text.
+  Read: `.claude/skills/tanner-brand-voice/SKILL.md` · Cursor: `.cursor/rules/tanner-brand-voice.mdc`
+- **tanner-code-review** — How Tanner reviews front-end changes — performance, design and visual regressions, content, accessibility, and code conventions. Use when reviewing a diff, PR, or branch of UI work before it ships, or when asked to review front-end/CSS/component changes.
+  Read: `.claude/skills/tanner-code-review/SKILL.md` · Cursor: `.cursor/rules/tanner-code-review.mdc`
+- **tanner-create-pr** — How Tanner wants pull requests written — title format, body structure, and the checks that must pass first. Use whenever you are creating, opening, generating, or drafting a PR (including from an agent harness like Conductor that invokes a create-PR step), or writing a PR title or description.
+  Read: `.claude/skills/tanner-create-pr/SKILL.md` · Cursor: `.cursor/rules/tanner-create-pr.mdc`
 <!-- END:tanner-agent-standards -->
 
 ## Project-specific

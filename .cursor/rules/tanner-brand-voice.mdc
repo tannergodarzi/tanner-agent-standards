@@ -1,0 +1,179 @@
+---
+description: How to write in Tanner's voice, plus his grammatical conventions for site copy. Use when writing or editing anything user-facing — blog posts, about/bio copy, project descriptions, marketing copy, metadata titles, page titles, H1 headings, and other display text.
+alwaysApply: false
+---
+
+# Tanner Brand Voice
+
+How to write like Tanner, and the grammatical rules his copy follows. Apply this whenever
+you write or edit anything a reader will see — long-form prose (blog posts, essays, bio),
+short display text (titles, headings, project blurbs), or marketing copy.
+
+> Plain markdown — any agent can read this file directly; Claude Code additionally
+> auto-loads it as a skill.
+
+Everything below is distilled from Tanner's own writing at
+[tannergodarzi.com](https://www.tannergodarzi.com). Every quoted line is his. Use the quotes
+to calibrate the instinct — don't copy the phrases.
+
+## The voice in one line
+
+Serious work, told like a person who's actually fun at the dinner party — first-person,
+opinionated, specific, and a little bit of a smartass. He said it best: *"The work is
+serious. The people are serious. But the method doesn't have to be."*
+
+## How to write like Tanner
+
+Each rule pairs the instinct with a real line from his writing. Match the instinct.
+
+### Talk to one friend, in first person
+He opens the About page with *"Hello friend, I'm Tanner."* Use **"I"** to own every
+decision and opinion; switch to **"we"** only to credit a team (*"the crew were a humble,
+eternally optimistic, and DIY bunch"*). Address the reader as **"you"** and give them
+orders when it's fun to: *"get off your high horse and come back to us on earth."* Never the
+passive voice, never "the author."
+
+### Open with a thesis, usually a contrarian one
+The first line stakes a claim you didn't expect and makes you want to argue. Then he earns
+it.
+
+- ✅ *"We tend to think professionalism means sanding off anything playful."*
+- ✅ *"Food, to me, is the least important part of a party."*
+- ✅ *"Nested content models are a pain to edit."*
+
+### Vary the pacing — long build, short landing
+Flowing sentences that develop an idea, then a stub that lands it. Fragments are a tool, not
+a mistake. Don't write in even, metronome beats.
+
+- ✅ *"That was the unlock."* · *"I treated it that way."* · *"That instinct is wrong."*
+- ✅ *"just stack content on a z-index and scroll…. right? Kind of."*
+
+### Be concrete — real names, real numbers, real objects
+Specifics are the whole game. Name the tool, the person, the count, the moment. Vague copy
+is the tell of someone who wasn't there.
+
+- ✅ *"a date farmer pulled up in his truck"* · *"it exaggerated my receding hairline"*
+- ✅ *"Japanese users on notion.com saw a 10–20% lift in Plus conversion rates"*
+- ❌ *"an unexpected encounter occurred"* · *"users saw a meaningful improvement"*
+
+### Explain hard things with a plain, physical analogy
+When an idea is abstract or technical, ground it in something you can picture. His signature:
+*"You can be the Michelin-star restaurant making one perfect burger at a time, or the food
+truck cranking them out for a crowd. Both are valid. Both are burgers. But the kitchen is
+different."* Others: the design system as the *"guardrail,"* the override as the *"escape
+hatch"* / *"release valve,"* planes as *"a magical stack of paper,"* shipping under growth as
+*"building the ship while sailing it."* One good analogy beats a paragraph of jargon.
+
+### Take the stance flat-out
+State the opinion as fact and move on. No "it depends," no "may potentially."
+
+- ✅ *"That instinct is wrong."* · *"Good taste was part of the job."*
+- ✅ *"English is just another language. The U.S. is just another country. No market is the default."*
+
+### Be a smartass — comedic hyperbole and self-deprecation
+Humor rides alongside the real point; it never replaces it. Two moves he leans on: **wild
+overstatement** for effect, and **deflating himself** so nothing reads as smug.
+
+- Hyperbole: *"please-evict-me-right-now rager"* · *"the T.J. Maxx tyranny of forcing 7+
+  people to sit facing each other"* · *"makes me want to spontaneously combust"* ·
+  *"congratulations you are running a seemingly successful cult"*
+- Self-deprecation: *"My first version turned out poorly"* · *"being shot at is not an
+  experience I recommend"* · *"I feel like I've rambled well enough to get to the end here."*
+
+### Invent a mock-grand, Capitalized term and treat it as doctrine
+He coins faux-authoritative phrases and runs with them, deadpan: the *"Authoritarian host,"*
+*"social lubricant,"* *"social armor,"* *"our patron saint of food, Eric Wareheim,"* *"the
+eternal march of time."* It's a wink — say the small thing with epic weight.
+
+### Use asides freely: parentheses, em-dashes, rhetorical questions
+A quick aside adds a second layer of thought or a joke. He does it three ways:
+
+- Parenthetical: *"(you should throw one too)"* · *"(I really like companies with cube-shaped
+  logos)"* · *"(yes, we used Sketch files in the year of 2,017)"*
+- Em-dash reversal: *"seriousness without relief doesn't make a team noble—it makes them tired."*
+- Question to the reader: *"is this a wedding?"* · *"You wouldn't exclude someone from coming
+  just because they aren't drinking right?"*
+
+Use them because you have a real aside — not as a reflexive tic on every sentence.
+
+### Land the ending on a compact, resonant line — often a wink
+Don't summarize. Close on a short line that either zooms out or grins.
+
+- ✅ *"A persona—used lightly, repeated sparingly, and kept honest—can be a small act of care
+  for your team and for yourself."*
+- ✅ *"I'll leave that as a topic for my next dinner party."* · *"That's probably where this
+  goes next."*
+
+### Underneath it all: optimistic, DIY, in love with the web
+The baseline attitude is eager and builder-ish. *"I think the web should be a sandbox of
+infinite exploration."* *"I'm eternally optimistic about the future, though I do love
+discourse and debate."* *"But, that's the fun of prototyping!"* When in doubt, sound like
+someone genuinely thrilled to make things and hand them to you.
+
+## Signature quirks
+
+Small, recognizable tics. Use sparingly and only where they fit — they're seasoning.
+
+- **Years written as big numbers, deadpan:** *"the year of 2,024,"* *"the year of 2,017,"*
+  *"the year of 2,000-and-24."* A running gag; don't overdo it.
+- **Occasional strikethrough for the quiet part out loud:** *"I am ~~uninterested~~ dealing
+  with a last minute issue."*
+- **Punchy triads for rhythm** (see the caution in rule 9 below): *"Be competent, be crisp,
+  be neutral."* · *"calm, cool, and collected."*
+- **A colon that sets up the punch:** *"a small heresy: you can do serious work and still
+  choose a light persona."*
+
+## Grammatical conventions
+
+Hard rules for display text — apply every time.
+
+### No periods in titles and headings
+Do **not** end metadata titles, page-level titles, or H1 headings with a period. Applies to:
+
+- `metadata.title`, `openGraph.title`, and `twitter.title` in Next.js metadata
+- Page-level titles and any top-level `<h1>` heading text
+
+Periods are fine in descriptions, body copy, and full sentences — this rule is specific to
+titles and headings.
+
+- ✅ `title: "Hello, I'm Tanner — A Real Person on the Internet"`
+- ❌ `title: "Hello, I'm Tanner — A Real Person on the Internet."`
+
+### Capitalize "Front-End"
+Always write **Front-End** — hyphenated, both words capitalized — in resume, about, and
+layout copy. Never "front-end", "frontend", or "Front-end".
+
+- ✅ `Front-End Engineer`
+- ❌ `Frontend Engineer` / `front-end engineer`
+
+## Never do this — don't sound like an AI
+
+These are the fastest ways to make copy read as machine-generated. Avoid them all. To sound
+human, stop writing like a press release and start writing like a person who actually knows
+what they're talking about.
+
+1. **Don't pad sentences.** Phrases like *"it is important to remember"* or *"it's worth
+   noting that"* add zero information. Cut them.
+2. **Ban AI vocabulary.** No *"delve," "intricate," "tapestry," "foster," "underscore,"
+   "pivotal," "realm," "landscape," "testament to,"* or *"navigate the complexities of."*
+3. **Don't pace like a metronome.** If every sentence is the same length, break it up. Real
+   writing is uneven — a long thought, then a short punch.
+4. **Kill the meta commentary.** Don't announce *"let's walk through"* or *"in this section
+   we'll explore."* Just say the thing.
+5. **Don't default to the passive voice.** Use *"I"* and *"you."* Write as you'd speak.
+6. **Delete "In conclusion."** You don't need to summarize what the reader saw two
+   paragraphs ago. End on a real line instead.
+7. **Use formatting like salt.** Don't put a header over every sentence or bold half the
+   page. Emphasis you use everywhere is emphasis nowhere.
+8. **Take a stance.** Never write *"this approach may potentially offer benefits"* like
+   someone afraid to commit. Say what you think.
+9. **Don't reflexively reach for the Rule of Three.** Hollow abstract-noun triads like
+   *"speed, efficiency, and innovation"* are an AI tell. (Tanner *does* use punchy, rhythmic
+   triads on purpose — *"Both are valid. Both are burgers. But the kitchen is different."*
+   The ban is on the vague filler kind, not real parallelism you mean.)
+10. **Be concrete, never vague.** Vague writing sounds like a robot; specific writing sounds
+    like a human. Name the real thing.
+
+> Don't exaggerate the *idea.* Comedic hyperbole is fine — Tanner does it constantly — but
+> not everything is *pivotal* and not every detail *underscores something deeper.* Nobody
+> talks like that.
