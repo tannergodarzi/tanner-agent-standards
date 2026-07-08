@@ -3,7 +3,7 @@
 <!-- One-line description of what this app is — replace this comment. -->
 
 <!-- BEGIN:tanner-agent-standards -->
-<!-- v1.5.0 · managed block — do not edit here; run `npx tanner-agent-standards sync` -->
+<!-- v1.6.0 · managed block — do not edit here; run `npx tanner-agent-standards sync` -->
 
 ## Setup commands
 - Install deps: `npm install`
@@ -71,6 +71,8 @@ AGENTS.md-based agents should open the referenced file when a task matches its d
   Read: `.claude/skills/tanner-code-review/SKILL.md` · Cursor: `.cursor/rules/tanner-code-review.mdc`
 - **tanner-create-pr** — How Tanner wants pull requests written — title format, body structure, and the checks that must pass first. Use whenever you are creating, opening, generating, or drafting a PR (including from an agent harness like Conductor that invokes a create-PR step), or writing a PR title or description.
   Read: `.claude/skills/tanner-create-pr/SKILL.md` · Cursor: `.cursor/rules/tanner-create-pr.mdc`
+- **tanner-website-review** — How Tanner audits a live, deployed website end-to-end as a first-time visitor — performance, accessibility, design, localization, content and hero/first-impression — plus a GEO test of whether AI agents can actually read the page. Use when reviewing, critiquing, or auditing a live site, preview deploy, or URL across mobile, laptop, and desktop breakpoints in a real browser (not a code diff — use tanner-code-review for diffs).
+  Read: `.claude/skills/tanner-website-review/SKILL.md` · Cursor: `.cursor/rules/tanner-website-review.mdc`
 <!-- END:tanner-agent-standards -->
 
 ## Project-specific
