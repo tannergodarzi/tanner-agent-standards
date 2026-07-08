@@ -16,6 +16,7 @@ templates/AGENTS.md                starter for a brand-new repo (markers + place
 skills/tanner-brand-voice/         canonical brand voice — plain markdown, any agent can read it
 skills/tanner-code-review/         how Tanner reviews front-end changes (perf · design · content · a11y · code)
 skills/tanner-create-pr/           how Tanner opens a PR (title format · body structure · Test Plan)
+skills/tanner-website-review/      how Tanner audits a live site (perf · a11y · design · l10n · content · GEO)
 bin/sync.mjs                       the sync / init / check CLI (zero dependencies)
 ```
 
@@ -150,6 +151,31 @@ a reviewer can open (e.g. `/home`). Before the PR opens it also gates on the rep
 Distributed the same way as the others — fanned out to `.claude/skills/`, `.cursor/rules/`, and
 the `## Skills` index in `AGENTS.md` — so any agent can read it and Claude Code auto-loads it as
 a skill.
+
+## The website-review skill
+
+`skills/tanner-website-review/SKILL.md` is how Tanner audits a **live, deployed site** — a
+production URL, a preview deploy, or a competitor's page — as opposed to the
+[code-review skill](#the-code-review-skill), which reviews a *diff* before it merges. It drives a
+real browser at three device tiers (**mobile 390px, laptop/MacBook 1440px, desktop 1920px+**),
+screenshots each, and reviews the page the way a **first-time visitor who might be here to sign
+up or buy** would — understanding the page from the screenshot *before* judging it. It walks five
+dimensions — **performance** (load speed, layout thrash, third-party scripts that aren't repeated
+or render-blocking, assets cached and reported as a CDN hit, minified/compressed/streamed
+source), **accessibility** (latest WCAG, screen readers, mobile-friendly, a
+`prefers-reduced-motion` killswitch), **design** (no overflow or regressions, performant
+animation, a clear type scale, light/dark parity with no theme collisions), **localization**
+(every locale actually translated — no `lorem ipsum` or mistranslation), and **content** (typos,
+plus the hero-as-billboard and CTA-clarity test) — and then runs the part Tanner cares about most:
+a **GEO / agent-parseability test** that measures the gap between what a human sees and what an
+AI agent gets from the raw HTML (spoofing a bot User-Agent, checking for `llms.txt`, a markdown
+twin, and JSON-LD). Findings come back labelled **Blocker / Warning / Nit** with a first-impression
+verdict and an Agent/GEO delta section up top.
+
+Distributed the same way as the others — fanned out to `.claude/skills/`, `.cursor/rules/`, and
+the `## Skills` index in `AGENTS.md` — so any agent can read it and Claude Code auto-loads it as
+a skill and can drive the browser for the visual, performance, accessibility, and GEO passes. If
+a browser can't be brought up, those dimensions are reported as unverified rather than passed.
 
 ## Claude-only shortcut (optional)
 
