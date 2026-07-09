@@ -18,8 +18,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/pre-commit-cleanup.mjs\"",
-            "statusMessage": "Checking staged changes are clean…"
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/pre-push-cleanup.mjs\"",
+            "statusMessage": "Checking changes are clean before push…"
           }
         ]
       }

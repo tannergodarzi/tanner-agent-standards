@@ -11,16 +11,18 @@ It **flags, it doesn't fix**: linters run and report; typos come back as a revie
 before a single character changes.
 
 > Plain markdown — any agent can read this file directly; Claude Code additionally auto-loads it
-> as a skill. It pairs with the shared pre-commit hook, which fires it before `git commit`.
+> as a skill. It pairs with the shared pre-push hook, which fires it before `git push`.
 
 **Scope is the changed content, full stop.** Don't lint the whole tree, don't spell-check files you
 didn't touch, don't reformat. The diff is the job — keep it fast.
 
 ## How to run
 
-1. **Find what changed.** Prefer the staged set — `git diff --cached --name-only` — since that's
-   what's about to commit. If nothing is staged, fall back to the working set
-   (`git diff --name-only`). That file list is your entire surface.
+1. **Find what changed.** Take the set that's about to leave your machine. Before a push, that's
+   the unpushed commits — `git diff --name-only @{upstream}..HEAD` (fall back to
+   `git diff --name-only origin/HEAD...HEAD` if no upstream is set). Invoked mid-work with nothing
+   to push yet, use the staged set (`git diff --cached --name-only`), or the working set
+   (`git diff --name-only`) if nothing is staged. That file list is your entire surface.
 2. **Run every linter the repo actually has, scoped to those files.** Detect, don't assume:
    - A `lint` script in `package.json` (`npm run lint`), plus any `typecheck` / `format:check`.
    - Config that implies a tool — `.eslintrc*` / `eslint.config.*` (ESLint), `.prettierrc*`
@@ -62,15 +64,15 @@ Linters first, then typos, then the ask.
    choice changes, so the user sees the blast radius before saying yes. Nothing changes until they
    answer; then edit only the approved rows.
 
-## Signalling the pre-commit hook
+## Signalling the pre-push hook
 
-If the shared pre-commit hook is what invoked you, it gates the commit until cleanup has run for the
-current staged tree. Once linters are clean (or their problems are noted) and typos are reviewed,
-fingerprint the staged tree so the same commit isn't gated twice:
+If the shared pre-push hook is what invoked you, it gates the push until cleanup has run for the
+commits about to ship. Once linters are clean (or their problems are noted) and typos are reviewed,
+fingerprint the tree you reviewed so the same push isn't gated twice:
 
 ```
-git write-tree > "$(git rev-parse --git-dir)/tanner-cleanup.ok"
+git rev-parse "HEAD^{tree}" > "$(git rev-parse --git-dir)/tanner-cleanup.ok"
 ```
 
-Change the staged files afterward and the fingerprint no longer matches, so the next commit re-runs
-cleanup — exactly as it should.
+Commit more afterward and the fingerprint no longer matches HEAD, so the next push re-runs cleanup
+— exactly as it should.

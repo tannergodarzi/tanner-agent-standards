@@ -19,6 +19,7 @@ import {
   cpSync,
   mkdirSync,
   readdirSync,
+  rmSync,
 } from "node:fs";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
@@ -172,9 +173,14 @@ function syncSkills() {
   return skills.map((s) => s.name);
 }
 
+// The current hook filename, and the one it superseded. `sync` migrates any consumer still on
+// the old pre-commit gate over to the pre-push one (see wireCleanupHook).
+const HOOK_FILE = "pre-push-cleanup.mjs";
+const OLD_HOOK_FILE = "pre-commit-cleanup.mjs";
+
 // The command string that identifies our managed PreToolUse entry in a consumer's
 // settings.json — used to keep the wiring idempotent across re-syncs.
-const cleanupHookCommand = 'node "$CLAUDE_PROJECT_DIR/.claude/hooks/pre-commit-cleanup.mjs"';
+const cleanupHookCommand = `node "$CLAUDE_PROJECT_DIR/.claude/hooks/${HOOK_FILE}"`;
 
 // Fan the shared hooks out to the consumer. Unlike skills, hooks are Claude Code-specific:
 // they land in .claude/hooks/ and get registered in .claude/settings.json. Every other agent
@@ -191,14 +197,19 @@ function syncHooks() {
   mkdirSync(dst, { recursive: true });
   cpSync(src, dst, { recursive: true }); // additive — leaves any repo-local hooks in place
 
+  const stale = join(dst, OLD_HOOK_FILE); // the renamed pre-commit gate, if this repo had it
+  if (existsSync(stale)) rmSync(stale);
+
   wireCleanupHook();
   return files;
 }
 
-// Register the pre-commit cleanup hook in the consumer's .claude/settings.json without
-// disturbing anything else they have there. Additive and idempotent: identified by its command
-// string, so a re-sync never duplicates it. If the file exists but isn't valid JSON we leave it
-// alone and print a note rather than risk corrupting the user's settings.
+// Register the pre-push cleanup hook in the consumer's .claude/settings.json without disturbing
+// anything else they have there. Additive and idempotent: identified by its command string, so a
+// re-sync never duplicates it. Also migrates a consumer off the old pre-commit gate — any
+// PreToolUse entry pointing at the superseded hook file is dropped before the new one is added, so
+// a re-sync moves them over cleanly instead of leaving both firing. If the file exists but isn't
+// valid JSON we leave it alone and print a note rather than risk corrupting the user's settings.
 function wireCleanupHook() {
   const p = join(TARGET, ".claude", "settings.json");
   let settings = {};
@@ -207,8 +218,8 @@ function wireCleanupHook() {
       settings = JSON.parse(read(p));
     } catch {
       console.warn(
-        "  ! .claude/settings.json isn't valid JSON — skipped hook wiring. Add the PreToolUse\n" +
-          "    entry for pre-commit-cleanup.mjs by hand, or fix the JSON and re-run sync.",
+        `  ! .claude/settings.json isn't valid JSON — skipped hook wiring. Add the PreToolUse\n` +
+          `    entry for ${HOOK_FILE} by hand, or fix the JSON and re-run sync.`,
       );
       return;
     }
@@ -216,18 +227,28 @@ function wireCleanupHook() {
   settings.hooks ||= {};
   settings.hooks.PreToolUse ||= [];
 
-  if (JSON.stringify(settings.hooks.PreToolUse).includes("pre-commit-cleanup.mjs")) return;
+  const list = settings.hooks.PreToolUse;
+  const before = JSON.stringify(list);
+  // Drop the superseded pre-commit registration if the consumer still has it.
+  settings.hooks.PreToolUse = list.filter(
+    (entry) => !JSON.stringify(entry).includes(OLD_HOOK_FILE),
+  );
+  const wired = JSON.stringify(settings.hooks.PreToolUse).includes(HOOK_FILE);
 
-  settings.hooks.PreToolUse.push({
-    matcher: "Bash",
-    hooks: [
-      {
-        type: "command",
-        command: cleanupHookCommand,
-        statusMessage: "Checking staged changes are clean…",
-      },
-    ],
-  });
+  if (!wired) {
+    settings.hooks.PreToolUse.push({
+      matcher: "Bash",
+      hooks: [
+        {
+          type: "command",
+          command: cleanupHookCommand,
+          statusMessage: "Checking changes are clean before push…",
+        },
+      ],
+    });
+  } else if (JSON.stringify(settings.hooks.PreToolUse) === before) {
+    return; // already on the pre-push gate and nothing stale to remove — no write needed
+  }
   writeFileSync(p, `${JSON.stringify(settings, null, 2)}\n`);
 }
 

@@ -6,6 +6,13 @@ could break existing consumer code. Dates are the commit date of the release.
 
 ## [1.7.0] — Unreleased
 
+- **Move the cleanup gate from pre-commit to pre-push** — local commits are no longer blocked; the
+  `tanner-cleanup` pass now runs once before a branch leaves the machine (`git push`), where
+  "nothing unclean ships" is what actually matters. `sync` migrates consumers off the old
+  pre-commit hook automatically: it drops the stale `pre-commit-cleanup.mjs` file and its
+  `settings.json` registration and wires in `pre-push-cleanup.mjs`. The hook's git-command matcher
+  is tighter too, so a command that merely mentions git/push in a path or string no longer
+  false-triggers the gate. `AGENTS.base.md` now reads "before every push" to match.
 - **Harden `tanner-cleanup` against leaking secrets** — the typo pass no longer quotes
   credential-looking lines. It now skips API keys, tokens, passwords, connection strings, and
   `.env`-style values instead of hunting them for typos, trims the reported context to the words
