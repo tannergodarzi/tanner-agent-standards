@@ -1,6 +1,8 @@
 ---
 name: changelog
 description: Maintainer-only skill for the tanner-agent-standards repo itself — the version bump in package.json is the trigger to update CHANGELOG.md. Use whenever package.json's version changes, and as a backstop during code review or PR creation in THIS repo. Not a distributed skill; never synced or published to consumers.
+metadata:
+  internal: true
 ---
 
 # Changelog (maintainer-only)

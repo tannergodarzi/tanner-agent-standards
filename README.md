@@ -1,5 +1,7 @@
 # tanner-agent-standards
 
+[![skills.sh](https://skills.sh/b/tannergodarzi/tanner-agent-standards)](https://skills.sh/tannergodarzi/tanner-agent-standards)
+
 Tanner's shared, **agent-agnostic** AI coding conventions — one source of truth, synced
 into every project.
 
@@ -89,6 +91,25 @@ Pin to a major so `npm update` only pulls compatible releases:
 ```bash
 npm i -D "github:tannergodarzi/tanner-agent-standards#semver:^1"
 ```
+
+## Or grab just the skills, via skills.sh
+
+Everything above installs the whole package — shared `AGENTS.md` rules, skills, and hooks,
+synced and drift-checked. If you only want the skills — and in any of the 70+ agents the
+[skills.sh](https://skills.sh) ecosystem reaches, not just Claude and Cursor — pull them
+straight from this repo:
+
+```bash
+npx skills add tannergodarzi/tanner-agent-standards
+```
+
+That clones the repo, lists every skill, and drops the ones you pick into that agent's
+native skills folder. Want one? Add `--skill tanner-code-review`. Want the lot, everywhere?
+`--all`. The maintainer-only `changelog` skill is flagged internal, so it never shows up in
+the list.
+
+No submit step, no npm publish — skills.sh indexes the public repo directly, so a fresh
+release is live the moment it lands on `main`.
 
 ## How the managed block works
 
