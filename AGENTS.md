@@ -61,6 +61,13 @@
   voice, tone, and grammatical conventions in the `tanner-brand-voice` skill
   (`.claude/skills/tanner-brand-voice/SKILL.md` — plain markdown, readable by any agent).
 
+## Before committing
+- **Clean up the changes before every commit.** Run the repo's linters on the changed files and
+  check newly-added comments and copy for typos, following the `tanner-cleanup` skill
+  (`.claude/skills/tanner-cleanup/SKILL.md` — plain markdown, readable by any agent). It flags
+  problems for review and never edits without asking. Claude Code triggers this automatically via a
+  pre-commit hook; every other agent should run the pass itself before `git commit`.
+
 ## PR instructions
 - Title format: `[project_name][Surface Area] Concise Title Case Title Of What This PR Accomplishes` — a
   surface-area prefix (the part of the app touched), Title Case, no trailing period.

@@ -6,12 +6,13 @@ could break existing consumer code. Dates are the commit date of the release.
 
 ## [1.7.0] — Unreleased
 
-- **Add `tanner-cleanup` skill + a shared pre-commit hook** — a light pass over just the changed
+- **Add `tanner-cleanup` skill + a shared pre-commit pass** — a light pass over just the changed
   content: run the repo's own linters on the changed files, then flag typos in newly-added comments
-  and copy for review (never auto-fixing, always asking first). `sync` now distributes hooks too —
-  it copies `hooks/*.mjs` into a consumer's `.claude/hooks/` and idempotently registers the
-  pre-commit gate in `.claude/settings.json`. The gate is Claude Code-specific; every other agent
-  still gets the skill through the AGENTS.md index. `git commit --no-verify` skips it.
+  and copy for review (never auto-fixing, always asking first). Enforced in two layers: an
+  agent-agnostic "Before committing" rule in `AGENTS.base.md` that every agent reads, plus a Claude
+  Code pre-commit hook that triggers it automatically. `sync` now distributes hooks too — it copies
+  `hooks/*.mjs` into a consumer's `.claude/hooks/` and idempotently registers the gate in
+  `.claude/settings.json`. `git commit --no-verify` skips the hook.
 - **Add `tanner-quality-bar` skill** — a shared reference leaf holding the severity ladder and
   the Performance, Accessibility, Design, and Content dimensions. `tanner-code-review` and
   `tanner-website-review` now chain to it instead of each repeating the same a11y/design bullets.
