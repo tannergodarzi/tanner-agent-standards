@@ -21,6 +21,23 @@ real viewport sizes catches layout shift, visual regressions, broken breakpoints
 that ignores reduced-motion. If you can't get a headless browser up, say so in the report —
 the visual and accessibility dimensions are then unverified, not passed.
 
+## Effort — scale the review to the change
+
+Don't run the same ceremony for a one-line copy tweak and a new layout system. Size the
+review to the diff, name the tier you ran in the report, and treat anything a higher tier
+would have caught but you didn't run as **unverified — not passed** (the same honesty rule as
+the browser check). Pick the tier honestly; when in doubt, go up one.
+
+- **Trivial** — a copy tweak, a single-value style change, or a self-contained non-visual
+  refactor. Read the diff, check the one or two dimensions it can actually affect, and skip the
+  browser matrix and production diff *unless the change renders differently*. Say what you
+  skipped and why.
+- **Standard** (default) — a component or a handful of files with a visible change. Run the
+  full procedure, but check the breakpoints the change actually touches (the `@media` widths
+  from step 3) rather than exhaustively sweeping every extreme.
+- **Full** — a new page, a layout system, motion, or cross-cutting CSS. The whole procedure:
+  every breakpoint *plus* the extremes, the production-baseline diff, and every dimension.
+
 ## How to run the review
 
 Don't spot-check. Work the diff top to bottom, then load the running page in the browser.
@@ -42,68 +59,31 @@ In order:
    page is the baseline for "did this regress." (e.g. work on Blog components → check local
    `/blog` against production `/blog`.) If a difference is intentional, say so; if you can't
    tell, flag it.
-6. **Walk the five dimensions below** for the mapped pages.
+6. **Walk the quality bar, then the diff-specific checks below** for the mapped pages.
 7. **Report** in the format at the bottom.
 
-## Severity — label every finding
+## The quality bar
 
-- **Blocker** — ships broken: visual regression, layout shift, broken layout at a real
-  breakpoint, a11y failure that locks someone out, a typo in shipped copy, a memory leak.
-- **Warning** — should fix, won't strictly break the page: an a11y gap short of a hard
-  failure, a marginal tap target, an unoptimized-but-working asset. Accessibility gaps are
-  **always at least a Warning** — never silent.
-- **Nit** — taste and consistency: naming, a cleaner pattern, a redundant style.
+Severity labels and the shared **Performance, Accessibility, Design, and Content** dimensions
+live in [[tanner-quality-bar]] — judge every mapped page against that bar first. It defines the
+**Blocker / Warning / Nit** ladder (accessibility gaps are always at least a Warning), no layout
+shift, the WCAG + reduced-motion + mobile-UX checks, the breakpoint sweep, and the brand-voice
+routing for copy. This review adds the diff-specific dimensions below on top of it.
 
-## Performance
+## What a diff review adds
 
-- **No layout shift.** Nothing may jump as the page settles. Images, embeds, and ads carry
-  explicit `width`/`height` or an aspect-ratio box. Fonts don't reflow the page on swap
-  (`font-display`, matched fallback metrics). Async-loaded content reserves its space up
-  front. Treat any visible shift as a Blocker.
-- **Fast to load.** No render-blocking work that didn't need to be. Watch bundle size on the
-  touched routes, unnecessary client components, and data fetched on the client that could be
-  fetched on the server. Big new dependencies get called out.
-- **No memory leaks.** Every `addEventListener`, `setInterval`/`setTimeout`, subscription,
-  observer (`IntersectionObserver`, `ResizeObserver`), and animation loop
-  (`requestAnimationFrame`) added in an effect must be torn down in that effect's cleanup.
-  A leak is a Blocker.
-- **Images optimized, assets lean.** Images are sized to their display box, served in a
-  modern format (WebP/AVIF), and lazy-loaded below the fold. No shipping a 4 MB hero PNG.
-  Flag any large asset added to the repo and ask if it can be smaller.
-- **Loading states are handled.** No long stretch of blank or unstyled screen. Async UI shows
-  a skeleton or placeholder that reserves the final layout (which also kills the shift in the
-  first bullet). No flash of unstyled or un-hydrated content.
+The bar is the floor. A pre-merge diff review layers these on:
 
-## Design
-
-- **No visual regressions.** Against the production baseline from step 4, nothing that wasn't
-  meant to change has changed — spacing, color, type scale, alignment, borders, shadows.
-- **Brand guidelines.** If the repo has design tokens, a theme, or brand rules, the change
-  uses them — no hardcoded one-off colors or spacing that dodge the system.
-- **Every reported breakpoint.** Open each page at *every* width you collected in step 3, plus
-  the extremes just past the smallest and largest query. The layout holds at all of them: no
-  overflow, no overlap, no orphaned element, no broken grid. This is the check people skip and
-  it's where regressions hide.
-
-## Content
-
-- **No typos.** Read the copy that changed. Spelling, grammar, punctuation.
-- **Follow the voice.** Any new or edited user-facing text — prose, headings, titles, labels,
-  metadata — follows the [[tanner-brand-voice]] skill: the voice, tone, and hard grammatical
-  rules (no periods in titles/headings, "Front-End" capitalized, no AI filler vocabulary).
-
-## Accessibility
-
-- **Meet the current spec.** Check against the latest WCAG. Semantic elements over `div`
-  soup, labels on every control, alt text on meaningful images, visible and logical focus
-  order, keyboard operability, and adequate color contrast. A hard failure is a Blocker; a
-  gap short of that is a **Warning — never leave it unsaid.**
-- **Motion has a killswitch.** Every animation, transition, or auto-playing motion has a
-  matching `@media (prefers-reduced-motion: reduce)` rule that turns it off (or down). Motion
-  without a reduced-motion escape hatch is a Blocker.
-- **Mobile UX is real.** Tap targets are at least ~44×44px with enough spacing that you can't
-  fat-finger the wrong one. Body text stays legible (≈16px+) so mobile Safari doesn't
-  zoom on focus. Nothing important hides behind hover, which phones don't have.
+- **Performance — memory leaks.** Every `addEventListener`, `setInterval`/`setTimeout`,
+  subscription, observer (`IntersectionObserver`, `ResizeObserver`), and animation loop
+  (`requestAnimationFrame`) added in an effect must be torn down in that effect's cleanup. A
+  leak is a Blocker.
+- **Performance — load cost of the change.** No render-blocking work that didn't need to be.
+  Watch bundle size on the touched routes, unnecessary client components, and data fetched on
+  the client that could be fetched on the server. Big new dependencies get called out.
+- **Design — against the production baseline.** The "no visual regressions" check in the bar is
+  measured against the production baseline you opened in step 4: nothing that wasn't meant to
+  change has changed. If a difference is intentional, say so; if you can't tell, flag it.
 
 ## Code
 
@@ -117,6 +97,11 @@ In order:
   `AGENTS.md`.)
 - **Descriptive to a human.** Names say what the thing is and does. No `data2`, no `tmp`, no
   abbreviations only the author understands.
+- **Constants and helpers live in their own files.** A standalone constant (`const BROWSER_AGENTS`)
+  or a reusable utility (`isWithinRange()`, `canSupportFeature()`) belongs in the shared
+  `utils`/`helpers` folder — one export per file, the file named after it — not inline in a
+  component where it can't be reused or tested. A new shared constant or helper declared inside a
+  component is a finding. (See the Code organization section of `AGENTS.md`.)
 
 ## Report format
 

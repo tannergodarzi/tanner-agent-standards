@@ -33,6 +33,18 @@ const END = "<!-- END:tanner-agent-standards -->";
 const read = (p) => readFileSync(p, "utf8");
 const VERSION = JSON.parse(read(join(PKG_ROOT, "package.json"))).version;
 
+// Rewrite `[[skill-name]]` cross-references into a followable pointer for one agent's tree.
+// The wikilink syntax reads well in source but resolves to nothing outside a wiki — Claude
+// Code loads a linked skill by description match, and Cursor / Codex / Gemini just see literal
+// brackets. `pathFor(name)` returns the target-native relative path for a skill slug, so each
+// agent gets `` `name` (`the/real/path`) `` — a real file it can open.
+function resolveWikilinks(text, pathFor) {
+  return text.replace(/\[\[([a-z0-9-]+)\]\]/g, (_, name) => `\`${name}\` (\`${pathFor(name)}\`)`);
+}
+
+const claudePath = (name) => `.claude/skills/${name}/SKILL.md`;
+const cursorPath = (name) => `.cursor/rules/${name}.mdc`;
+
 // Split a SKILL.md into its YAML frontmatter fields and its markdown body.
 function parseSkill(raw) {
   const m = raw.match(/^---\n([\s\S]*?)\n---\n?([\s\S]*)$/);
@@ -138,16 +150,22 @@ function syncSkills() {
   const skills = skillsList();
   if (!skills.length) return [];
 
-  // Claude: verbatim tree copy.
+  // Claude: tree copy (preserves any supporting files in a skill dir), then rewrite each
+  // SKILL.md's wikilinks to Claude-native paths so a linked skill is one open away.
   const claudeDst = join(TARGET, ".claude", "skills");
   mkdirSync(claudeDst, { recursive: true });
   cpSync(join(PKG_ROOT, "skills"), claudeDst, { recursive: true });
+  for (const s of skills) {
+    const f = join(claudeDst, s.name, "SKILL.md");
+    writeFileSync(f, resolveWikilinks(read(f), claudePath));
+  }
 
-  // Cursor: one .mdc rule per skill.
+  // Cursor: one .mdc rule per skill, wikilinks resolved to the sibling .mdc rules.
   const cursorDst = join(TARGET, ".cursor", "rules");
   mkdirSync(cursorDst, { recursive: true });
   for (const s of skills) {
-    const mdc = `---\ndescription: ${s.description}\nalwaysApply: false\n---\n\n${s.body}\n`;
+    const body = resolveWikilinks(s.body, cursorPath);
+    const mdc = `---\ndescription: ${s.description}\nalwaysApply: false\n---\n\n${body}\n`;
     writeFileSync(join(cursorDst, `${s.name}.mdc`), mdc);
   }
 
