@@ -6,6 +6,11 @@ could break existing consumer code. Dates are the commit date of the release.
 
 ## [1.7.0] — Unreleased
 
+- **Harden `tanner-cleanup` against leaking secrets** — the typo pass no longer quotes
+  credential-looking lines. It now skips API keys, tokens, passwords, connection strings, and
+  `.env`-style values instead of hunting them for typos, trims the reported context to the words
+  around each typo, and redacts anything secret-shaped to `[redacted]`. Clears the Snyk W007
+  finding on the skill.
 - **Add `tanner-cleanup` skill + a shared pre-commit pass** — a light pass over just the changed
   content: run the repo's own linters on the changed files, then flag typos in newly-added comments
   and copy for review (never auto-fixing, always asking first). Enforced in two layers: an

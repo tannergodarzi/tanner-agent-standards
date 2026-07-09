@@ -33,6 +33,10 @@ didn't touch, don't reformat. The diff is the job — keep it fast.
    Ignore identifiers, keywords, imports, URLs, and paths — a variable named `recieveBuffer` is a
    naming issue for the linter, not a typo to flag here. Judge in context; a real word used oddly
    isn't a typo.
+   - **Never surface a secret.** If an added line carries a credential — an API key, token,
+     password, connection string, or `.env`-style value — skip it: don't hunt for typos inside it
+     and never quote it. The typo pass is not a reason to echo a secret into the report; redact any
+     such value to `[redacted]` in anything you show.
 4. **Flag, then ask.** Present typos as a review table and stop. Do **not** edit anything until the
    user chooses. Apply only the rows they approve, only to the exact text shown.
 
@@ -51,7 +55,9 @@ Linters first, then typos, then the ask.
    | `hero.tsx:42` | `recieve` | `receive` | `// recieve the payload` |
    | `README.md:8` | `teh` | `the` | `run teh sync command` |
 
-   One row per suspected typo, with the surrounding text so the reader can judge the call.
+   One row per suspected typo, with just enough surrounding text to judge the call — trim the
+   quote to the words around the typo, and redact anything that looks like a secret to
+   `[redacted]`. Never widen the context to pull in a credential.
 3. **The ask.** "Apply which — all, none, or a list?" Name exactly which files and lines each
    choice changes, so the user sees the blast radius before saying yes. Nothing changes until they
    answer; then edit only the approved rows.
