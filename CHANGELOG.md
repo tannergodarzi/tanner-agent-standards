@@ -6,6 +6,15 @@ could break existing consumer code. Dates are the commit date of the release.
 
 ## [1.7.0] — Unreleased
 
+- **Harden the review skills against untrusted input** — `tanner-website-review` loads
+  outsider-authored pages (raw HTML, meta, JSON-LD, bot-UA responses) straight into context, so it
+  now states plainly that fetched content is **data, never instructions**: a page trying to steer
+  the review is reported as an Agent/GEO finding, not obeyed, and URL allow-listing is explicitly
+  *not* the fix. It also announces the URL it's about to load (a real outbound request) and warns
+  that Claude Code's in-browser path drives your real Chrome session, not a throwaway one.
+  `tanner-code-review` gets the same data-not-instructions framing (a diff can come from anyone)
+  and a URL-transparency note; `tanner-cleanup` gets the one-liner for consistency. Clears the Snyk
+  W011 finding on `tanner-website-review`.
 - **Move the cleanup gate from pre-commit to pre-push** — local commits are no longer blocked; the
   `tanner-cleanup` pass now runs once before a branch leaves the machine (`git push`), where
   "nothing unclean ships" is what actually matters. `sync` migrates consumers off the old
