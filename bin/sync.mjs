@@ -172,6 +172,65 @@ function syncSkills() {
   return skills.map((s) => s.name);
 }
 
+// The command string that identifies our managed PreToolUse entry in a consumer's
+// settings.json — used to keep the wiring idempotent across re-syncs.
+const cleanupHookCommand = 'node "$CLAUDE_PROJECT_DIR/.claude/hooks/pre-commit-cleanup.mjs"';
+
+// Fan the shared hooks out to the consumer. Unlike skills, hooks are Claude Code-specific:
+// they land in .claude/hooks/ and get registered in .claude/settings.json. Every other agent
+// still gets the paired skill through the AGENTS.md index — the hook only adds Claude's
+// automatic trigger on top. (The maintainer-only changelog hook lives directly under this
+// package's .claude/ and is never in `hooks/`, so it is never distributed.)
+function syncHooks() {
+  const src = join(PKG_ROOT, "hooks");
+  if (!existsSync(src)) return [];
+  const files = readdirSync(src).filter((f) => f.endsWith(".mjs"));
+  if (!files.length) return [];
+
+  const dst = join(TARGET, ".claude", "hooks");
+  mkdirSync(dst, { recursive: true });
+  cpSync(src, dst, { recursive: true }); // additive — leaves any repo-local hooks in place
+
+  wireCleanupHook();
+  return files;
+}
+
+// Register the pre-commit cleanup hook in the consumer's .claude/settings.json without
+// disturbing anything else they have there. Additive and idempotent: identified by its command
+// string, so a re-sync never duplicates it. If the file exists but isn't valid JSON we leave it
+// alone and print a note rather than risk corrupting the user's settings.
+function wireCleanupHook() {
+  const p = join(TARGET, ".claude", "settings.json");
+  let settings = {};
+  if (existsSync(p)) {
+    try {
+      settings = JSON.parse(read(p));
+    } catch {
+      console.warn(
+        "  ! .claude/settings.json isn't valid JSON — skipped hook wiring. Add the PreToolUse\n" +
+          "    entry for pre-commit-cleanup.mjs by hand, or fix the JSON and re-run sync.",
+      );
+      return;
+    }
+  }
+  settings.hooks ||= {};
+  settings.hooks.PreToolUse ||= [];
+
+  if (JSON.stringify(settings.hooks.PreToolUse).includes("pre-commit-cleanup.mjs")) return;
+
+  settings.hooks.PreToolUse.push({
+    matcher: "Bash",
+    hooks: [
+      {
+        type: "command",
+        command: cleanupHookCommand,
+        statusMessage: "Checking staged changes are clean…",
+      },
+    ],
+  });
+  writeFileSync(p, `${JSON.stringify(settings, null, 2)}\n`);
+}
+
 function check() {
   const p = join(TARGET, "AGENTS.md");
   const fail = (msg) => {
@@ -215,10 +274,12 @@ if (cmd === "--version" || cmd === "-v") {
   const a = ensureAgents();
   const c = ensureClaude();
   const skills = syncSkills();
+  const hooks = syncHooks();
   console.log(`tanner-agent-standards v${VERSION} → ${TARGET}`);
   console.log(`  • AGENTS.md  ${a.created ? "created" : a.changed ? "updated" : "already current"}`);
   console.log(`  • CLAUDE.md  ${c.created ? "created" : "kept"}`);
   console.log(`  • skills     ${skills.length ? `${skills.join(", ")} → .claude/skills, .cursor/rules` : "none"}`);
+  console.log(`  • hooks      ${hooks.length ? `${hooks.join(", ")} → .claude/hooks, .claude/settings.json` : "none"}`);
   if (a.created || cmd === "init") {
     console.log("\nNext: replace the app-description comment near the top of AGENTS.md, then commit.");
   }

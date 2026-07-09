@@ -18,12 +18,20 @@ skills/tanner-quality-bar/         the shared UI quality bar (severity + perf ·
 skills/tanner-code-review/         how Tanner reviews front-end changes (quality bar + memory/bundle · code)
 skills/tanner-create-pr/           how Tanner opens a PR (title format · body structure · Test Plan)
 skills/tanner-website-review/      how Tanner audits a live site (quality bar + cache · l10n · GEO)
+skills/tanner-cleanup/             light pre-commit pass — lint changed files · flag typos in new copy
+hooks/pre-commit-cleanup.mjs       shared Claude Code hook that runs tanner-cleanup before a commit
 bin/sync.mjs                       the sync / init / check CLI (zero dependencies)
 ```
 
 `sync` fans the skills out to each agent's native home in the consumer repo — `.claude/skills/`
 (Claude), `.cursor/rules/*.mdc` (Cursor), and a `## Skills` index inside `AGENTS.md` for
 Codex / Copilot / Gemini and any other agent that only reads `AGENTS.md`.
+
+It also distributes any hooks under `hooks/`: each is copied into the consumer's `.claude/hooks/`
+and registered in `.claude/settings.json` (additive and idempotent — your other settings are left
+untouched). Hooks are Claude Code-specific, so they layer an automatic trigger on top of the skill
+every agent already sees. This is distinct from the maintainer-only `.claude/hooks/changelog-check.mjs`,
+which lives under this package's own `.claude/` and is never distributed.
 
 ## Add it to a project
 
