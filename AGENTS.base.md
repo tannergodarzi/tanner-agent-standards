@@ -36,6 +36,18 @@
 - **Semantic HTML first:** prefer real elements and the base element styles in
   `styles/typography.css` before adding a class.
 
+## Code organization
+- **One constant per file, one helper per file, in a shared folder.** Standalone constants
+  (`const BROWSER_AGENTS = [...]`, typically `UPPER_SNAKE_CASE`) and reusable utility functions
+  (`isWithinRange()`, `canSupportFeature()`) don't live inline in a component — they go in a
+  shared `utils`/`helpers` folder, **one export per file**, the file named after what it exports.
+  A helper file is named for its function (`isWithinRange.ts` → `export function isWithinRange`);
+  a constant file is named for its constant, camelCased (`browserAgents.ts` →
+  `export const BROWSER_AGENTS`). This keeps them discoverable, testable, and reusable instead of
+  buried in a component and copy-pasted.
+- **Scope the exception.** A value used in exactly one file, and only there, can stay local —
+  the rule is for anything shared or reused. When in doubt, extract it.
+
 ## Content style
 - When writing or editing any user-facing copy — long-form prose (blog posts, bio,
   marketing copy) as well as display text (metadata titles, page titles, H1s) — follow the

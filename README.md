@@ -14,9 +14,10 @@ project-specific rules stay yours — sync never touches anything outside the ma
 AGENTS.base.md                     the shared rules (Setup · Deps · TS · React · CSS · Content · PR)
 templates/AGENTS.md                starter for a brand-new repo (markers + placeholders)
 skills/tanner-brand-voice/         canonical brand voice — plain markdown, any agent can read it
-skills/tanner-code-review/         how Tanner reviews front-end changes (perf · design · content · a11y · code)
+skills/tanner-quality-bar/         the shared UI quality bar (severity + perf · a11y · design · content)
+skills/tanner-code-review/         how Tanner reviews front-end changes (quality bar + memory/bundle · code)
 skills/tanner-create-pr/           how Tanner opens a PR (title format · body structure · Test Plan)
-skills/tanner-website-review/      how Tanner audits a live site (perf · a11y · design · l10n · content · GEO)
+skills/tanner-website-review/      how Tanner audits a live site (quality bar + cache · l10n · GEO)
 bin/sync.mjs                       the sync / init / check CLI (zero dependencies)
 ```
 
@@ -115,19 +116,34 @@ block so `check` can detect drift.
   every project without a per-repo copy —
   `ln -s "$PWD/skills/tanner-brand-voice" ~/.claude/skills/tanner-brand-voice`.
 
+## The quality-bar skill
+
+`skills/tanner-quality-bar/SKILL.md` is the shared definition of what a good *rendered page*
+looks like — the **Blocker / Warning / Nit** severity ladder plus four dimensions: **performance**
+(no layout shift, loading states, lean images), **accessibility** (latest WCAG, a
+`prefers-reduced-motion` killswitch, mobile tap targets and font size), **design** (no
+regressions, the layout holds at every breakpoint, a clear type scale, brand tokens), and
+**content** (no typos, copy routed through the [brand-voice skill](#the-brand-voice-skill)).
+
+It's a **reference leaf** — no run procedure, no report format of its own. Both review skills
+below chain to it (`[[tanner-quality-bar]]`) so the bar is defined once and can't drift between
+them; each then adds the dimensions unique to its job. This is the node that makes the skill
+graph do real work instead of repeating the same a11y and design bullets in two files.
+
 ## The code-review skill
 
 `skills/tanner-code-review/SKILL.md` is how Tanner reviews front-end work before it ships —
 a diff, a PR, or your own branch. It's a review procedure, not a checklist: get the diff, map
 each touched component to the routes that render it, grep the touched files for every `@media`
 breakpoint, then **spin up a headless browser** and load the pages against the running build.
-It walks five dimensions — **performance** (layout shift, load speed, memory leaks, image and
-asset weight, loading states), **design** (visual regressions vs the production baseline, brand
-tokens, every reported breakpoint), **content** (typos, plus the [brand-voice
-skill](#the-brand-voice-skill) for new copy), **accessibility** (latest WCAG, a
-`prefers-reduced-motion` killswitch on all motion, mobile tap targets and font size), and
-**code** (matching existing naming and conventions). Findings come back labelled
-**Blocker / Warning / Nit** with a one-line ship / ship-after-warnings / blocked verdict.
+It **scales the effort to the change** (trivial / standard / full) so a one-line copy tweak
+doesn't trigger the same ceremony as a new layout system. It judges every page against the
+[quality-bar skill](#the-quality-bar-skill) first, then adds the diff-specific checks —
+**memory leaks** (effect cleanup), **load cost** (bundle size, needless client components,
+client-vs-server fetch), and **visual regressions measured against the production baseline** —
+plus a **code** dimension (matching existing naming and conventions). Findings come back
+labelled **Blocker / Warning / Nit** with a one-line ship / ship-after-warnings / blocked
+verdict.
 
 Distributed the same way as brand-voice — fanned out to `.claude/skills/`, `.cursor/rules/`,
 and the `## Skills` index in `AGENTS.md` — so any agent can read it and Claude Code auto-loads
@@ -159,18 +175,18 @@ production URL, a preview deploy, or a competitor's page — as opposed to the
 [code-review skill](#the-code-review-skill), which reviews a *diff* before it merges. It drives a
 real browser at three device tiers (**mobile 390px, laptop/MacBook 1440px, desktop 1920px+**),
 screenshots each, and reviews the page the way a **first-time visitor who might be here to sign
-up or buy** would — understanding the page from the screenshot *before* judging it. It walks five
-dimensions — **performance** (load speed, layout thrash, third-party scripts that aren't repeated
-or render-blocking, assets cached and reported as a CDN hit, minified/compressed/streamed
-source), **accessibility** (latest WCAG, screen readers, mobile-friendly, a
-`prefers-reduced-motion` killswitch), **design** (no overflow or regressions, performant
-animation, a clear type scale, light/dark parity with no theme collisions), **localization**
-(every locale actually translated — no `lorem ipsum` or mistranslation), and **content** (typos,
-plus the hero-as-billboard and CTA-clarity test) — and then runs the part Tanner cares about most:
-a **GEO / agent-parseability test** that measures the gap between what a human sees and what an
-AI agent gets from the raw HTML (spoofing a bot User-Agent, checking for `llms.txt`, a markdown
-twin, and JSON-LD). Findings come back labelled **Blocker / Warning / Nit** with a first-impression
-verdict and an Agent/GEO delta section up top.
+up or buy** would — understanding the page from the screenshot *before* judging it. It **scales
+the effort to the scope** (spot check / standard / full audit), judges the page against the
+[quality-bar skill](#the-quality-bar-skill) first, then adds the live-site checks: **performance**
+extras (third-party scripts, assets cached and reported as a CDN hit, minified/compressed/streamed
+source), an **accessibility** pass in both themes with a screen reader, **design** extras
+(light/dark parity, performant animation, descriptive UI assets), **localization** (every locale
+actually translated — no `lorem ipsum` or mistranslation), and a **first-impression** test
+(hero-as-billboard, CTA clarity). Then it runs the part Tanner cares about most: a **GEO /
+agent-parseability test** that measures the gap between what a human sees and what an AI agent
+gets from the raw HTML (spoofing a bot User-Agent, checking for `llms.txt`, a markdown twin, and
+JSON-LD). Findings come back labelled **Blocker / Warning / Nit** with a first-impression verdict
+and an Agent/GEO delta section up top.
 
 Distributed the same way as the others — fanned out to `.claude/skills/`, `.cursor/rules/`, and
 the `## Skills` index in `AGENTS.md` — so any agent can read it and Claude Code auto-loads it as
@@ -194,5 +210,15 @@ text) is the default.
 1. Edit `AGENTS.base.md`, `skills/`, or `templates/`.
 2. Bump `version` in `package.json` (semver: patch = wording, minor = new rule, major = a
    rule that could break existing code).
-3. `git commit && git tag vX.Y.Z && git push --tags`.
-4. In each consumer: `npm update tanner-agent-standards && npx tanner-agent-standards sync`.
+3. Add a matching section to `CHANGELOG.md`. The version bump is the trigger — a PostToolUse
+   hook reminds you automatically the moment `package.json`'s version has no changelog section.
+4. `git commit && git tag vX.Y.Z && git push --tags` — and swap `Unreleased` for the date.
+5. In each consumer: `npm update tanner-agent-standards && npx tanner-agent-standards sync`.
+
+**Maintainer-only tooling.** `.claude/skills/changelog/` (a project skill), `.claude/hooks/changelog-check.mjs`
+(a read-only detector), and the hook wiring in `.claude/settings.json` keep `CHANGELOG.md` in
+step with `package.json` — the hook fires after any edit and nudges you until the current
+version has an entry. All of it lives under `.claude/`, **not** `skills/`, on purpose: `sync`
+only fans out `skills/` and `package.json`'s `files` only ships `skills/`, so none of it is
+distributed to consumers or listed in their `AGENTS.md`. Leave it where it is — don't move it
+into `skills/`, and don't delete it as if it were generated output.

@@ -1,6 +1,6 @@
 {
   "name": "tanner-agent-standards",
-  "version": "1.6.0",
+  "version": "1.7.0",
   "description": "Tanner's shared, agent-agnostic AI conventions (AGENTS.md + skills), synced across repos.",
   "type": "module",
   "private": true,

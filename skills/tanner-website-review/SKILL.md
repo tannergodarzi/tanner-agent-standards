@@ -26,6 +26,22 @@ actually good." Any copy you'd rewrite still routes through [[tanner-brand-voice
 actually look at it. If you can't bring a browser up, every visual, performance, and
 accessibility dimension is reported **unverified, not passed.**
 
+## Effort — scale the audit to the scope
+
+A "does the hero overflow on mobile?" spot check and a full competitive teardown are not the
+same job. Size the audit to what's being asked, name the tier you ran in the report, and treat
+anything a higher tier would have caught but you didn't run as **unverified — not passed** (the
+same honesty rule as the browser check). When in doubt, go up one.
+
+- **Spot check** — one page, one question ("is the hero clear?", "does it overflow at 390px?").
+  Hit the tier(s) the question implicates and the dimensions it touches, with a quick glance at
+  the rest. Say what you didn't open.
+- **Standard** (default) — a page or a small site, walked as a cold visitor. All three device
+  tiers, every dimension, and the full agent/GEO test.
+- **Full audit** — a whole site or a competitive teardown. Every load-bearing page at all three
+  tiers *plus* the extremes, the source `@media` widths if you have them, and the GEO test run
+  across pages, not just the home.
+
 ## How to run the review
 
 1. **Pick the targets.** The URL, plus the pages that carry the load — the home/hero, the
@@ -46,7 +62,8 @@ accessibility dimension is reported **unverified, not passed.**
    (no scrolling)** and then the full page. *Understand the page from the screenshot before you
    form any opinion* — see the next section.
 4. **Be the unfamiliar user** (below) before you critique anything.
-5. **Walk the dimensions** — Performance, Accessibility, Design, Localization, Content.
+5. **Walk the quality bar, then the live-site additions** — Performance, Accessibility, Design,
+   plus Localization and the hero/first-impression checks below.
 6. **Run the agent / GEO test** — its own section, and the one Tanner reads first.
 7. **Report** in the format at the bottom.
 
@@ -62,66 +79,45 @@ The core move: you have never seen this site and you might be here to **sign up 
   its label tell you what happens when you click? "Get started," "Submit," "Learn more" that
   lead somewhere ambiguous are findings; "Start a 14-day trial," "See pricing" are clear.
 
-## Severity — label every finding
+## The quality bar
 
-- **Blocker** — the page is broken or misleading for real users: horizontal overflow, layout
-  shift, a broken layout at a real breakpoint, an a11y failure that locks someone out, a typo in
-  a headline, a hero nobody can decode, a primary CTA that's invisible to agents.
-- **Warning** — should fix, won't strictly break the page: an a11y gap short of a hard failure, a
-  marginal tap target, a static asset that isn't cached, meaning a human gets but an agent can't.
-  Accessibility gaps are **always at least a Warning** — never silent.
-- **Nit** — taste and consistency: a one-off type size, a slightly-off icon, a cleaner label.
+Severity labels and the shared **Performance, Accessibility, Design, and Content** dimensions
+live in [[tanner-quality-bar]] — judge every page against that bar first. It defines the
+**Blocker / Warning / Nit** ladder (accessibility gaps are always at least a Warning), no layout
+shift, the WCAG + reduced-motion + mobile-UX checks, the breakpoint sweep with extremes, the
+typography scale, and the brand-voice routing for copy. A live audit adds its own Blockers on
+top — a hero nobody can decode, a primary CTA that's invisible to agents — and layers the
+served-page and first-impression checks below.
 
-## Performance
+## What a live-site audit adds
 
-- **Fast, with no thrash.** The page loads quickly and nothing jumps as it settles (CLS) —
-  images, embeds, ads, and fonts reserve their space up front. No repeated forced reflow /
-  layout thrash on load or scroll. Any visible shift is a Blocker.
-- **Third-party scripts: not repeated, not render-blocking.** No tag or analytics library loaded
-  twice (a duplicate `<script src>` is a finding). No third-party `<script>` in `<head>` without
-  `async`/`defer` stalling first paint. Count the third parties — each one is a tax; call out the
-  count.
-- **Cached, and reported as cached by whoever serves it.** On a repeat load, static assets
-  (JS/CSS/images/fonts) come back as a **cache HIT from the CDN/host**, not a fresh fetch. Read
-  the response headers: a real `cache-control` (long `max-age` + `immutable` on hashed assets)
-  and a hit signal from the provider — `x-vercel-cache: HIT`, `cf-cache-status: HIT`,
+The bar is the floor. Auditing a *served, rendered* page as a cold visitor layers these on:
+
+- **Performance — third-party scripts.** No tag or analytics library loaded twice (a duplicate
+  `<script src>` is a finding). No third-party `<script>` in `<head>` without `async`/`defer`
+  stalling first paint. Count the third parties — each one is a tax; call out the count.
+- **Performance — cached, and reported as cached by whoever serves it.** On a repeat load, static
+  assets (JS/CSS/images/fonts) come back as a **cache HIT from the CDN/host**, not a fresh fetch.
+  Read the response headers: a real `cache-control` (long `max-age` + `immutable` on hashed
+  assets) and a hit signal — `x-vercel-cache: HIT`, `cf-cache-status: HIT`,
   `x-cache: Hit from cloudfront`, or `age` > 0. A static asset that returns `no-store` or a MISS
   on every load is a finding.
-- **Minified, compressed, streamed.** Prod HTML/CSS/JS comes back **minified** (no dev
-  whitespace or comments), **compressed** (`content-encoding: br` or `gzip`), and **streamed**
+- **Performance — minified, compressed, streamed.** Prod HTML/CSS/JS comes back **minified** (no
+  dev whitespace or comments), **compressed** (`content-encoding: br` or `gzip`), and **streamed**
   (`transfer-encoding: chunked` / HTTP-2/3, not buffered whole). Un-minified production source or
   a missing `content-encoding` is a finding.
-
-## Accessibility
-
-- **Meet the current spec.** Check against the latest WCAG: semantic elements over `div` soup,
-  a label on every control, meaningful `alt` on meaningful images, a visible and logical focus
-  order, full keyboard operability, and adequate color contrast — verified in **both** themes.
-  Do a screen-reader pass: tab through and confirm the reading order and the accessible names
-  make sense. A hard failure is a Blocker; a gap short of that is a **Warning — never unsaid.**
-- **Reduced motion has a killswitch.** Set `prefers-reduced-motion: reduce` and reload — every
-  animation, transition, auto-play, and parallax must stop or damp down. Motion that ignores it
-  is a Blocker.
-- **Mobile UX is real.** Tap targets ~44×44px with enough spacing to not fat-finger; body text
-  ~16px+ so mobile Safari doesn't zoom on focus; nothing important hidden behind hover.
-
-## Design
-
-- **No regressions, no horizontal overflow.** At every tier — plus the extremes just past the
-  smallest and largest — the layout holds: no overflow, no horizontal scrollbar where there
-  shouldn't be one, no overlap, no orphaned element, no broken grid. An unexpected horizontal
-  scroll is a Blocker.
-- **Light and dark parity — no theme collisions.** Toggle `prefers-color-scheme` **both ways**.
-  Every element is styled for both modes: no dark-only color that leaves light mode with
-  white-on-white, an invisible icon, or an unstyled block — and no light-only rule that breaks in
-  dark. Check both directions; this is the collision people ship.
-- **Animations are performant.** Motion rides `transform`/`opacity`, not layout-triggering
+- **Accessibility — both themes, plus a screen-reader pass.** Run the bar's WCAG checks in
+  **both** color schemes, and tab through with a screen reader to confirm the reading order and
+  accessible names make sense.
+- **Design — light and dark parity.** Toggle `prefers-color-scheme` **both ways**. Every element
+  is styled for both modes: no dark-only color that leaves light mode with white-on-white, an
+  invisible icon, or an unstyled block — and no light-only rule that breaks in dark. Check both
+  directions; this is the collision people ship.
+- **Design — performant animation.** Motion rides `transform`/`opacity`, not layout-triggering
   properties; no jank or long tasks on scroll; it should feel like 60fps.
-- **A clear typography scale.** One consistent scale, not a soup of one-off sizes and weights.
-  The heading hierarchy reads as a deliberate system.
-- **UI assets are descriptive.** Icons and images carry meaning a first-timer gets: icon-only
-  buttons have labels, no critical information lives *only* in an image, marks and logos are
-  recognizable. (This also feeds the agent test below.)
+- **Design — UI assets are descriptive.** Icons and images carry meaning a first-timer gets:
+  icon-only buttons have labels, no critical information lives *only* in an image, marks and
+  logos are recognizable. (This also feeds the agent test below.)
 
 ## Localization (if applicable)
 
@@ -134,17 +130,17 @@ Only when the site ships more than one language. Load **each** locale and check:
 
 If the site is single-language, say **"n/a — single locale"** and move on.
 
-## Content and first impression
+## First impression
 
-- **No typos.** Read the copy at each tier — spelling, grammar, punctuation.
+Typos and brand voice are covered by the bar's Content dimension. A live audit adds the
+first-impression checks a cold visitor's landing hinges on:
+
 - **The Hero is the billboard.** Treat the above-the-fold hero differently from body copy. In the
   first viewport, with no scrolling, does it convey what this is and why you'd care, *succinctly*?
   Someone landing cold should get it in about five seconds. A hero that's pretty but says nothing,
   or buries the value under a vague tagline, is a finding.
 - **CTAs are clear.** The primary action is obvious and its label says what happens when you
   click. Descriptive beats cute (see *Be the unfamiliar user*).
-- **Voice.** Any copy you'd rewrite follows [[tanner-brand-voice]] — the voice and the hard rules
-  (no periods in titles/headings, "Front-End" capitalized, no AI filler vocabulary).
 
 ## The agent test (GEO)
 

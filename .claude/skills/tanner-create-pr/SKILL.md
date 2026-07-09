@@ -39,7 +39,7 @@ Format: `[project_name][Surface Area] Concise Title Case Title Of What This PR A
 - **Concise, and about what the PR accomplishes** — a plain statement of the outcome, not
   "Added…" or "This PR adds…". Short enough to read at a glance; the body carries the detail.
 - **No trailing period**, and **no periods inside** the title — same rule as headings in the
-  [[tanner-brand-voice]] skill.
+  `tanner-brand-voice` (`.claude/skills/tanner-brand-voice/SKILL.md`) skill.
 - **No AI filler** — none of the padding vocabulary the brand-voice skill bans.
 
 ## Body
@@ -66,7 +66,7 @@ Write for the reviewer deciding whether to merge. Lead with substance — no pre
 
 Still **capture a screenshot for every change that produces a visual update** — a visual change
 with no visual evidence is incomplete. Drive a headless Chrome instance to capture the touched
-surface area (Claude Code can do this with its browser tools — see the [[tanner-code-review]]
+surface area (Claude Code can do this with its browser tools — see the `tanner-code-review` (`.claude/skills/tanner-code-review/SKILL.md`)
 skill for spinning one up).
 
 **Do not embed the screenshot in the PR body, and never commit it.** A GitHub PR body can only
@@ -85,5 +85,5 @@ inline (GitHub uploads and hosts it at that point).
   - Replace spaces and slashes with hyphens *within* each part; keep the underscores between
     parts. Example: `tannergodarzi-palembang_tanner_blog-index-grid_2026-07-04.png`.
 
-All prose follows the [[tanner-brand-voice]] skill — Tanner's voice, no periods in headings,
+All prose follows the `tanner-brand-voice` (`.claude/skills/tanner-brand-voice/SKILL.md`) skill — Tanner's voice, no periods in headings,
 no AI filler. The PR should read like Tanner wrote it, not like a template.

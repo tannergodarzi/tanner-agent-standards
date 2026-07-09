@@ -3,7 +3,7 @@
 <!-- One-line description of what this app is — replace this comment. -->
 
 <!-- BEGIN:tanner-agent-standards -->
-<!-- v1.6.0 · managed block — do not edit here; run `npx tanner-agent-standards sync` -->
+<!-- v1.7.0 · managed block — do not edit here; run `npx tanner-agent-standards sync` -->
 
 ## Setup commands
 - Install deps: `npm install`
@@ -43,6 +43,18 @@
 - **Semantic HTML first:** prefer real elements and the base element styles in
   `styles/typography.css` before adding a class.
 
+## Code organization
+- **One constant per file, one helper per file, in a shared folder.** Standalone constants
+  (`const BROWSER_AGENTS = [...]`, typically `UPPER_SNAKE_CASE`) and reusable utility functions
+  (`isWithinRange()`, `canSupportFeature()`) don't live inline in a component — they go in a
+  shared `utils`/`helpers` folder, **one export per file**, the file named after what it exports.
+  A helper file is named for its function (`isWithinRange.ts` → `export function isWithinRange`);
+  a constant file is named for its constant, camelCased (`browserAgents.ts` →
+  `export const BROWSER_AGENTS`). This keeps them discoverable, testable, and reusable instead of
+  buried in a component and copy-pasted.
+- **Scope the exception.** A value used in exactly one file, and only there, can stay local —
+  the rule is for anything shared or reused. When in doubt, extract it.
+
 ## Content style
 - When writing or editing any user-facing copy — long-form prose (blog posts, bio,
   marketing copy) as well as display text (metadata titles, page titles, H1s) — follow the
@@ -71,6 +83,8 @@ AGENTS.md-based agents should open the referenced file when a task matches its d
   Read: `.claude/skills/tanner-code-review/SKILL.md` · Cursor: `.cursor/rules/tanner-code-review.mdc`
 - **tanner-create-pr** — How Tanner wants pull requests written — title format, body structure, and the checks that must pass first. Use whenever you are creating, opening, generating, or drafting a PR (including from an agent harness like Conductor that invokes a create-PR step), or writing a PR title or description.
   Read: `.claude/skills/tanner-create-pr/SKILL.md` · Cursor: `.cursor/rules/tanner-create-pr.mdc`
+- **tanner-quality-bar** — The shared bar for what "good" means on any rendered page — the severity ladder plus the Performance, Accessibility, Design, and Content dimensions that both a diff review and a live-site audit judge against. The common core that tanner-code-review and tanner-website-review chain to; read it directly when judging UI quality, or when either review skill points you here.
+  Read: `.claude/skills/tanner-quality-bar/SKILL.md` · Cursor: `.cursor/rules/tanner-quality-bar.mdc`
 - **tanner-website-review** — How Tanner audits a live, deployed website end-to-end as a first-time visitor — performance, accessibility, design, localization, content and hero/first-impression — plus a GEO test of whether AI agents can actually read the page. Use when reviewing, critiquing, or auditing a live site, preview deploy, or URL across mobile, laptop, and desktop breakpoints in a real browser (not a code diff — use tanner-code-review for diffs).
   Read: `.claude/skills/tanner-website-review/SKILL.md` · Cursor: `.cursor/rules/tanner-website-review.mdc`
 <!-- END:tanner-agent-standards -->
