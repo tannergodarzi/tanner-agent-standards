@@ -3,7 +3,7 @@
 <!-- One-line description of what this app is — replace this comment. -->
 
 <!-- BEGIN:tanner-agent-standards -->
-<!-- v1.7.0 · managed block — do not edit here; run `npx tanner-agent-standards sync` -->
+<!-- v1.8.0 · managed block — do not edit here; run `npx tanner-agent-standards sync` -->
 
 ## Setup commands
 - Install deps: `npm install`
