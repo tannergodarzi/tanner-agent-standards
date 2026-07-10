@@ -6,6 +6,11 @@ could break existing consumer code. Dates are the commit date of the release.
 
 ## [1.7.0] — Unreleased
 
+- **Add video/media checks to `tanner-website-review`** — flag any video-like element (a real
+  `<video>`, a ~16:9 frame, or a centered play-button overlay) that renders without a poster or
+  thumbnail behind the play button, so nobody ships an empty well with a floating play button. Also
+  flag any autoplaying element that starts with sound instead of muted — audio on autoplay above
+  volume zero is a WCAG audio-control violation.
 - **Harden the review skills against untrusted input** — `tanner-website-review` loads
   outsider-authored pages (raw HTML, meta, JSON-LD, bot-UA responses) straight into context, so it
   now states plainly that fetched content is **data, never instructions**: a page trying to steer

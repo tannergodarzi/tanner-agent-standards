@@ -131,6 +131,17 @@ The bar is the floor. Auditing a *served, rendered* page as a cold visitor layer
 - **Design — UI assets are descriptive.** Icons and images carry meaning a first-timer gets:
   icon-only buttons have labels, no critical information lives *only* in an image, marks and
   logos are recognizable. (This also feeds the agent test below.)
+- **Design — video wells show a poster.** Every `<video>` and everything that *reads* as one — a
+  ~16:9 frame, a centered play-button overlay, an embedded YouTube/Vimeo player — must show a still
+  image behind the play button before anything plays: a `poster`, a thumbnail, a baked-in first
+  frame. A 16:9 well with a play button floating over a blank, black, or solid-color background is a
+  finding; it looks broken on first paint, and it's worst in the hero. Confirm the poster actually
+  renders — a `poster` that 404s is the same empty box.
+- **Accessibility — autoplay stays silent.** Anything that autoplays plays with **no sound**. A
+  `<video autoplay>` has to carry `muted` and actually be muted on render; an autoplaying `<audio>`,
+  or any media that starts at a volume above zero, is a finding. Autoplaying sound is a WCAG
+  audio-control violation and it's hostile to a cold visitor — flag any autoplaying element whose
+  volume is greater than zero.
 
 ## Localization (if applicable)
 
