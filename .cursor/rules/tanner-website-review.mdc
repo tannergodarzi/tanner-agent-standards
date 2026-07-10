@@ -45,16 +45,21 @@ same honesty rule as the browser check). When in doubt, go up one.
 - **Spot check** — one page, one question ("is the hero clear?", "does it overflow at 390px?").
   Hit the tier(s) the question implicates and the dimensions it touches, with a quick glance at
   the rest. Say what you didn't open.
-- **Standard** (default) — a page or a small site, walked as a cold visitor. All three device
-  tiers, every dimension, and the full agent/GEO test.
-- **Full audit** — a whole site or a competitive teardown. Every load-bearing page at all three
-  tiers *plus* the extremes, the source `@media` widths if you have them, and the GEO test run
-  across pages, not just the home.
+- **Standard** (default) — the supplied page (or the one you inferred), walked as a cold visitor.
+  All three device tiers, every dimension, and the full agent/GEO test. One target still means one
+  page — don't expand to neighbors unless the user asks.
+- **Full audit** — a whole site or a competitive teardown, **only when the user explicitly asks for
+  multiple pages or a full site.** Every load-bearing page at all three tiers *plus* the extremes,
+  the source `@media` widths if you have them, and the GEO test run across pages, not just the home.
 
 ## How to run the review
 
-1. **Pick the targets.** The URL, plus the pages that carry the load — the home/hero, the
-   pricing or sign-up page, and one real content page. List them; those are what you open.
+1. **Pick the targets.** Use exactly the URL or URLs the user supplied — or, when none is given,
+   the single page you can infer from the surface you're working on. A single target means a
+   single-page review at every requested tier. Do not follow links or add a home, pricing,
+   sign-up, or content page unless the user explicitly requests a multi-page or full-site audit.
+   List the exact targets; pages outside that list are out of scope and must not be reported as
+   omitted, unverified, or a limitation.
 2. **Bring up a real browser at three tiers.** First say which URL(s) you're about to load — a
    review loads a live page, which is a real outbound request from the machine you're on (and the
    GEO test below spoofs bot User-Agents against the site). Drive Chrome — headless where you can,
@@ -71,9 +76,11 @@ same honesty rule as the browser check). When in doubt, go up one.
    response-header read, and a User-Agent override. (Headless is a throwaway instance; Claude
    Code's in-browser path drives your **real** Chrome session, logged-in tabs and cookies included
    — prefer headless for an untrusted or unknown URL.)
-3. **Screenshot first, judge second.** At each tier capture the **above-the-fold first viewport
-   (no scrolling)** and then the full page. *Understand the page from the screenshot before you
-   form any opinion* — see the next section.
+3. **Screenshot first, judge second.** At each tier capture the **hero — the above-the-fold first
+   viewport (no scrolling), once every element in it has fully rendered and settled** (fonts
+   swapped, images decoded, entry animation done) — and then the full page. If the mid-load frame
+   differs from the settled one, capture both; the difference is a finding. *Understand the page
+   from the settled hero screenshot before you form any opinion* — see the next section.
 4. **Be the unfamiliar user** (below) before you critique anything.
 5. **Walk the quality bar, then the live-site additions** — Performance, Accessibility, Design,
    plus Localization and the hero/first-impression checks below.
@@ -159,10 +166,16 @@ If the site is single-language, say **"n/a — single locale"** and move on.
 Typos and brand voice are covered by the bar's Content dimension. A live audit adds the
 first-impression checks a cold visitor's landing hinges on:
 
-- **The Hero is the billboard.** Treat the above-the-fold hero differently from body copy. In the
-  first viewport, with no scrolling, does it convey what this is and why you'd care, *succinctly*?
-  Someone landing cold should get it in about five seconds. A hero that's pretty but says nothing,
-  or buries the value under a vague tagline, is a finding.
+- **The Hero is the billboard — judge it first and hardest.** The hero is everything immediately
+  visible in the viewport at load time: what's on screen *before any scroll*, and once every
+  element in that first viewport has fully rendered and settled (fonts swapped in, images decoded,
+  entry animation finished — not the mid-load flash). Screenshot exactly that frame at each tier
+  and treat it differently from body copy. In that first viewport, with no scrolling, does it
+  convey what this is and why you'd care, *succinctly*? Someone landing cold should get it in about
+  five seconds. A hero that's pretty but says nothing, buries the value under a vague tagline,
+  loads with a broken or shifting first frame, or renders differently once settled than it did
+  mid-load, is a finding — and because the hero is the whole first impression, a hero nobody can
+  decode is a **Blocker**, not a Nit.
 - **CTAs are clear.** The primary action is obvious and its label says what happens when you
   click. Descriptive beats cute (see *Be the unfamiliar user*).
 
