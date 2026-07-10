@@ -4,7 +4,20 @@ All notable changes to `tanner-agent-standards`, newest first. Versions follow t
 in the README: **patch** = wording, **minor** = a new rule or skill, **major** = a change that
 could break existing consumer code. Dates are the commit date of the release.
 
-## [1.7.0] — Unreleased
+## [1.8.0] — 2026-07-10
+
+- **Add Eve as an optional generated runtime target** — consumers can configure a repository-local
+  output directory plus explicit dependency bundles in `package.json`. `sync` now preserves the
+  root skill's discovery frontmatter, appends canonical dependency bodies in configured order,
+  rewrites bundled references to local anchors, and leaves contextual references as readable
+  names. `check` compares every configured Eve output byte-for-byte and flags stale generated
+  skills, while cleanup only removes files carrying the package marker and never deletes
+  user-authored skills.
+- **Add a package test suite** — Node's built-in test runner now covers unchanged consumers,
+  rendering and link rewriting, idempotency, drift checks, invalid paths, missing skills, and safe
+  stale-file cleanup.
+
+## [1.7.0] — 2026-07-10
 
 - **Add video/media checks to `tanner-website-review`** — flag any video-like element (a real
   `<video>`, a ~16:9 frame, or a centered play-button overlay) that renders without a poster or

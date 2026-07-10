@@ -20,14 +20,15 @@ skills/tanner-quality-bar/         the shared UI quality bar (severity + perf ·
 skills/tanner-code-review/         how Tanner reviews front-end changes (quality bar + memory/bundle · code)
 skills/tanner-create-pr/           how Tanner opens a PR (title format · body structure · Test Plan)
 skills/tanner-website-review/      how Tanner audits a live site (quality bar + cache · l10n · GEO)
-skills/tanner-cleanup/             light pre-commit pass — lint changed files · flag typos in new copy
-hooks/pre-commit-cleanup.mjs       shared Claude Code hook that runs tanner-cleanup before a commit
+skills/tanner-cleanup/             light pre-push pass — lint changed files · flag typos in new copy
+hooks/pre-push-cleanup.mjs         shared Claude Code hook that runs tanner-cleanup before a push
 bin/sync.mjs                       the sync / init / check CLI (zero dependencies)
 ```
 
 `sync` fans the skills out to each agent's native home in the consumer repo — `.claude/skills/`
 (Claude), `.cursor/rules/*.mdc` (Cursor), and a `## Skills` index inside `AGENTS.md` for
-Codex / Copilot / Gemini and any other agent that only reads `AGENTS.md`.
+Codex / Copilot / Gemini and any other agent that only reads `AGENTS.md`. Repositories that opt
+in to Eve also get self-contained runtime skills in their configured `agent/skills` directory.
 
 It also distributes any hooks under `hooks/`: each is copied into the consumer's `.claude/hooks/`
 and registered in `.claude/settings.json` (additive and idempotent — your other settings are left
@@ -79,11 +80,11 @@ then run `npm run sync:standards`.
 (The bare `npx` above works because the package is already installed in the repo. In a repo
 that hasn't installed it yet, use `npx github:tannergodarzi/tanner-agent-standards sync`.)
 
-`npm outdated` across your repos shows which are behind. To fail CI or a pre-commit hook
+`npm outdated` across your repos shows which are behind. To fail CI or a pre-push hook
 on drift:
 
 ```bash
-npx tanner-agent-standards check       # exit 1 if AGENTS.md is missing/behind the installed version
+npx tanner-agent-standards check       # exit 1 if AGENTS.md or configured Eve output has drifted
 ```
 
 Pin to a major so `npm update` only pulls compatible releases:
@@ -91,6 +92,64 @@ Pin to a major so `npm update` only pulls compatible releases:
 ```bash
 npm i -D "github:tannergodarzi/tanner-agent-standards#semver:^1"
 ```
+
+## Generate Eve runtime skills
+
+Eve needs one self-contained runtime skill, not a trail of files it has to discover mid-run. Add
+an explicit target to the consuming repo's `package.json`:
+
+```json
+{
+  "tannerAgentStandards": {
+    "eve": {
+      "directory": "agent/skills",
+      "skills": {
+        "tanner-website-review": {
+          "bundle": [
+            "tanner-quality-bar",
+            "tanner-brand-voice"
+          ]
+        }
+      }
+    }
+  }
+}
+```
+
+Then run the same command every other target already uses:
+
+```bash
+npx tanner-agent-standards sync
+# • Claude  → .claude/skills
+# • Cursor  → .cursor/rules
+# • Eve     → agent/skills/tanner-website-review
+```
+
+The output at `agent/skills/tanner-website-review/SKILL.md` keeps the canonical skill's YAML
+frontmatter so Eve can discover it, adds a generated-file warning, and appends each configured
+dependency in the exact order listed. Bundled `[[skill-name]]` references become local Markdown
+anchors; contextual references that aren't bundled become readable skill names. Bundling is
+deliberately explicit — a mention of `tanner-code-review`, for example, doesn't make it a runtime
+dependency by accident.
+
+The directory must stay inside the consumer repository. Absolute paths and `..` traversal fail
+with an actionable error, as do missing skills or dependencies. `sync` removes stale Eve
+`SKILL.md` files only when they carry this package's generated marker; it never deletes a
+user-authored skill. `check` compares every configured Eve file byte-for-byte, so a local edit or
+stale generated skill fails CI instead of quietly drifting.
+
+Existing consumers don't need to do anything. Without `tannerAgentStandards.eve`, `sync`, `check`,
+`update`, and `init` behave as they did before, and `init` never invents Eve configuration. To
+migrate a manually maintained runtime skill:
+
+1. Add the Eve configuration above to `package.json`.
+2. Run `npm update tanner-agent-standards` and commit the resulting `package-lock.json` change.
+3. Run `npx tanner-agent-standards sync`; the generated file replaces the manual copy at the
+   configured path.
+4. Keep Eve's instructions loading only the requested root skill. Its configured runtime
+   dependencies are already bundled into that file.
+5. Run `npx tanner-agent-standards check` and the consumer's own typecheck/build commands before
+   committing the generated output.
 
 ## Or grab just the skills, via skills.sh
 
@@ -236,12 +295,13 @@ text) is the default.
 
 ## Releasing a change
 
-1. Edit `AGENTS.base.md`, `skills/`, or `templates/`.
+1. Edit `AGENTS.base.md`, `skills/`, `templates/`, or the sync CLI.
 2. Bump `version` in `package.json` (semver: patch = wording, minor = new rule, major = a
    rule that could break existing code).
 3. Add a matching section to `CHANGELOG.md`. The version bump is the trigger — a PostToolUse
    hook reminds you automatically the moment `package.json`'s version has no changelog section.
-4. `git commit && git tag vX.Y.Z && git push --tags` — and swap `Unreleased` for the date.
+4. `npm test`, then `git commit && git tag vX.Y.Z && git push --tags` — and swap `Unreleased`
+   for the date.
 5. In each consumer: `npm update tanner-agent-standards && npx tanner-agent-standards sync`.
 
 **Maintainer-only tooling.** `.claude/skills/changelog/` (a project skill), `.claude/hooks/changelog-check.mjs`
