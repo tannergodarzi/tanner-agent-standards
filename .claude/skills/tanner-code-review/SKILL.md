@@ -1,14 +1,16 @@
 ---
 name: tanner-code-review
-description: How Tanner reviews front-end changes — performance, design and visual regressions, content, accessibility, and code conventions. Use when reviewing a diff, PR, or branch of UI work before it ships, or when asked to review front-end/CSS/component changes.
+description: How Tanner reviews front-end changes — performance, design and visual regressions, content, accessibility, and code conventions. Use only when the user explicitly asks to review a diff, PR, branch, or front-end/CSS/component change; never run it automatically before a commit or push.
 ---
 
 # Tanner Code Review
 
-How to review front-end work the way Tanner does. Run this before any UI change ships —
-a PR, a branch, or your own working diff. The goal is a page that's fast, looks right at
-every size, reads clean, works for everyone, and looks like it was written by the same
-person who wrote the rest of the codebase.
+How to review front-end work the way Tanner does. This is an on-demand review: run it only
+when the user explicitly asks for a code review. **Never make it a prerequisite for a commit
+or `git push`, and never trigger it automatically as part of either workflow.** Pushing a UI
+change is not a review request. The goal is a page that's fast, looks right at every size,
+reads clean, works for everyone, and looks like it was written by the same person who wrote
+the rest of the codebase.
 
 > Plain markdown — any agent can read this file directly; Claude Code additionally
 > auto-loads it as a skill and can drive the browser (via its browser tools) for the
