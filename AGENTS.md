@@ -89,7 +89,7 @@ AGENTS.md-based agents should open the referenced file when a task matches its d
   Read: `.claude/skills/tanner-brand-voice/SKILL.md` · Cursor: `.cursor/rules/tanner-brand-voice.mdc`
 - **tanner-cleanup** — A light pre-commit pass over just the changed content — run the repo's own linters on the changed files, then read newly-added comments and copy for typos and surface them for review, never auto-fixing. Use right before a commit, or whenever asked to lint, typo-check, or clean up a working change or staged diff before it ships.
   Read: `.claude/skills/tanner-cleanup/SKILL.md` · Cursor: `.cursor/rules/tanner-cleanup.mdc`
-- **tanner-code-review** — How Tanner reviews front-end changes — performance, design and visual regressions, content, accessibility, and code conventions. Use when reviewing a diff, PR, or branch of UI work before it ships, or when asked to review front-end/CSS/component changes.
+- **tanner-code-review** — How Tanner reviews front-end changes — performance, design and visual regressions, content, accessibility, and code conventions. Use only when the user explicitly asks to review a diff, PR, branch, or front-end/CSS/component change; never run it automatically before a commit or push.
   Read: `.claude/skills/tanner-code-review/SKILL.md` · Cursor: `.cursor/rules/tanner-code-review.mdc`
 - **tanner-create-pr** — How Tanner wants pull requests written — title format, body structure, and the checks that must pass first. Use whenever you are creating, opening, generating, or drafting a PR (including from an agent harness like Conductor that invokes a create-PR step), or writing a PR title or description.
   Read: `.claude/skills/tanner-create-pr/SKILL.md` · Cursor: `.cursor/rules/tanner-create-pr.mdc`

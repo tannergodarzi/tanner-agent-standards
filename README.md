@@ -220,10 +220,12 @@ graph do real work instead of repeating the same a11y and design bullets in two 
 
 ## The code-review skill
 
-`skills/tanner-code-review/SKILL.md` is how Tanner reviews front-end work before it ships —
-a diff, a PR, or your own branch. It's a review procedure, not a checklist: get the diff, map
-each touched component to the routes that render it, grep the touched files for every `@media`
-breakpoint, then **spin up a headless browser** and load the pages against the running build.
+`skills/tanner-code-review/SKILL.md` is Tanner's on-demand review procedure for a diff, a PR,
+or a branch. It runs only when the user explicitly asks for a code review; it is never a required
+pre-commit or pre-push step, and an agent must not trigger it automatically in either workflow.
+When requested, get the diff, map each touched component to the routes that render it, grep the
+touched files for every `@media` breakpoint, then **spin up a headless browser** and load the
+pages against the running build.
 It **scales the effort to the change** (trivial / standard / full) so a one-line copy tweak
 doesn't trigger the same ceremony as a new layout system. It judges every page against the
 [quality-bar skill](#the-quality-bar-skill) first, then adds the diff-specific checks —
