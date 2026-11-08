@@ -4,6 +4,11 @@ All notable changes to `tanner-agent-standards`, newest first. Versions follow t
 in the README: **patch** = wording, **minor** = a new rule or skill, **major** = a change that
 could break existing consumer code. Dates are the commit date of the release.
 
+## [1.9.0] — Unreleased
+
+- **Isolate review browsers and filter evidence** — both review skills require fresh browser contexts, scoped authenticated sessions, and credential filtering before tool output or saved artifacts; performance checks retain parsed cache, compression, and transport evidence.
+- **Bound the website review's GEO extraction** — preserve browser/bot comparisons and fixed same-origin content probes while treating every response as untrusted data, rejecting page-directed actions, and reporting unsafe or incomplete checks as unverified. These safeguards address the reported W007/W011 risks; a fresh Snyk scan is still needed to confirm its verdict.
+
 ## [1.8.0] — 2026-07-10
 
 - **Add Eve as an optional generated runtime target** — consumers can configure a repository-local

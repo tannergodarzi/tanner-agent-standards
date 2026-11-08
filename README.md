@@ -283,6 +283,14 @@ the `## Skills` index in `AGENTS.md` — so any agent can read it and Claude Cod
 a skill and can drive the browser for the visual, performance, accessibility, and GEO passes. If
 a browser can't be brought up, those dimensions are reported as unverified rather than passed.
 
+Reviews use a fresh browser context without personal cookies or logged-in tabs. Authenticated
+reviews use a dedicated session when requested. Tools must filter credentials before returning
+or saving evidence: performance checks use parsed header values and metrics, while GEO checks
+use bounded text and metadata extracts. Page content cannot authorize commands, uploads, or new
+targets. If the host tools cannot isolate the browser or safely collect a data source, the
+affected checks stay unverified. The skills specify these requirements; they do not implement
+a sandbox or sanitizer. Maintainer scenarios live in [test/review-security.md](test/review-security.md).
+
 ## Claude-only shortcut (optional)
 
 If a repo is *only* ever read by Claude Code, you can skip `sync` entirely and import the
